@@ -27,7 +27,8 @@ class ManualParameterDef<T> extends ParameterDef<T> {
 
 	private T rawValue;
 
-	private ManualParameterDef(GetOpt parent, Class<T> type, String mnemonic, String documentation) {
+	private ManualParameterDef(GetOpt parent, Class<T> type, String mnemonic,
+	                           String documentation) {
 		super(parent, type, mnemonic, documentation);
 	}
 
@@ -37,12 +38,13 @@ class ManualParameterDef<T> extends ParameterDef<T> {
 	}
 
 	public static <M> ManualParameterDef<M> makeFlag(GetOpt parent, Class<M> type, String mnemonic,
-	                                           String documentation) {
+	                                                 String documentation) {
 		return new ManualParameterDef<>(parent, type, mnemonic, documentation);
 	}
 
-	public static <M> ManualParameterDef<M> makeParameter(GetOpt parent, Class<M> type, String mnemonic,
-	                                                String documentation, boolean required) {
+	public static <M> ManualParameterDef<M> makeParameter(GetOpt parent, Class<M> type,
+	                                                      String mnemonic, String documentation,
+	                                                      boolean required) {
 		TypeConverter<M> defaultConverter = ConverterUtil.getDefaultConverter(type);
 		if (defaultConverter == null) {
 			throw new OptionProcessingException("Class " + type.getName() + " has no default " +
@@ -52,10 +54,12 @@ class ManualParameterDef<T> extends ParameterDef<T> {
 				defaultConverter);
 	}
 
-	public static <M> ManualParameterDef<M> makeParameter(GetOpt parent, Class<M> type, String mnemonic,
-	                                                String documentation, boolean required,
-	                                                TypeConverter<M> typeConverter) {
-		return new ManualParameterDef<>(parent, type, mnemonic, documentation, required, typeConverter);
+	public static <M> ManualParameterDef<M> makeParameter(GetOpt parent, Class<M> type,
+	                                                      String mnemonic, String documentation,
+	                                                      boolean required,
+	                                                      TypeConverter<M> typeConverter) {
+		return new ManualParameterDef<>(parent, type, mnemonic, documentation, required,
+				typeConverter);
 	}
 
 	public <W> W getValue(Class<W> castClass) {

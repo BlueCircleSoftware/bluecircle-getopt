@@ -41,7 +41,7 @@ class ReceptacleParameterDef<T> extends ParameterDef<T> {
 	}
 
 	public static ReceptacleParameterDef<Boolean> makeFlag(GetOpt parent, String documentation,
-	                                              Consumer<Boolean> setter) {
+	                                                       Consumer<Boolean> setter) {
 		return new ReceptacleParameterDef<>(parent, Boolean.class, null, documentation, setter);
 	}
 

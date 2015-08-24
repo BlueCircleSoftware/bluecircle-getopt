@@ -28,6 +28,15 @@ import java.math.BigDecimal;
  */
 public class BigDecimalConverter implements TypeConverter<BigDecimal> {
 
+	/**
+	 * Convert a string into a BigDecimal or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a BigDecimal if the string is
+	 * parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see BigDecimal#BigDecimal(String)
+	 */
 	@Override
 	public BigDecimal convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

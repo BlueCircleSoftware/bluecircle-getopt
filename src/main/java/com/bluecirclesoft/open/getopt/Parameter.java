@@ -75,14 +75,6 @@ public @interface Parameter {
 	boolean required() default false;
 
 	/**
-	 * If specified, the default value if this parameter is not listed. If no default is specified
-	 * and the parameter is not listed, null is used.
-	 *
-	 * @return the default value
-	 */
-	String defaultValue() default "";
-
-	/**
 	 * A converter that will parse the string value into the correct type.
 	 *
 	 * @return the converter

@@ -19,8 +19,8 @@ limitations under the License.
 package com.bluecirclesoft.open.getopt;
 
 /**
- * This exception is thrown when there's a failure in command line processing (internal software
- * inconsistency, as opposed to CommandLineOptionException).
+ * This exception is thrown when there's an error in the setup of a GetOpt instance (programmer did
+ * not meet the expectation of the software).
  *
  * @see CommandLineOptionException
  */

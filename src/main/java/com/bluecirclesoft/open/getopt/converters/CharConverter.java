@@ -22,13 +22,20 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Characters.
  */
 public class CharConverter implements TypeConverter<Character> {
 
+	/**
+	 * Convert a string into a Character or null.
+	 *
+	 * @param input the input string (<em>this will NOT be trimmed</em>)
+	 * @return {@code null} if {@code input} is null or "", or the character in the string.
+	 * @throws CommandLineOptionException if the string has more than one character
+	 */
 	@Override
 	public Character convert(String input) throws CommandLineOptionException {
-		if (ConverterUtil.isEmpty(input)) {
+		if (input == null || input.isEmpty()) {
 			return null;
 		} else if (input.length() > 1) {
 			throw new CommandLineOptionException("Parameter can only be one character");

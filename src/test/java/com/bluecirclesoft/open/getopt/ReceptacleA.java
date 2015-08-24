@@ -23,8 +23,7 @@ package com.bluecirclesoft.open.getopt;
  */
 public class ReceptacleA {
 
-	@Parameter(shortOpt = "a", longOpt = "option-one", mnemonic = "opt", documentation = "value " +
-			"for option one")
+	@Parameter(shortOpt = "a", longOpt = "option-one", mnemonic = "opt", documentation = "value for option one")
 	private String opt1;
 
 	@Flag(shortOpt = "b", documentation = "option 2?")

@@ -21,21 +21,18 @@ package com.bluecirclesoft.open.getopt.converters;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to "parse" parameter strings into Strings (pass-through).
  */
 public class StringConverter implements TypeConverter<String> {
 
+	/**
+	 * Pass-through "converter" of a string.
+	 *
+	 * @param input the input string
+	 * @return same string
+	 */
 	@Override
 	public String convert(String input) {
-		if (input == null) {
-			return null;
-		} else {
-			String result = input.trim();
-			if (input.isEmpty()) {
-				return null;
-			} else {
-				return result;
-			}
-		}
+		return input;
 	}
 }

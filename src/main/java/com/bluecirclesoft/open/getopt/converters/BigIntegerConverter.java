@@ -24,10 +24,19 @@ import com.bluecirclesoft.open.getopt.TypeConverter;
 import java.math.BigInteger;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into BigIntegers.
  */
 public class BigIntegerConverter implements TypeConverter<BigInteger> {
 
+	/**
+	 * Convert a string into a BigInteger or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a BigInteger if the string is
+	 * parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see BigInteger#BigInteger(String)
+	 */
 	@Override
 	public BigInteger convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

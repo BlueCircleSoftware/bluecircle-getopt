@@ -22,10 +22,22 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Integers. This converter uses  {@code
+ * Integer.parseInt()}, so look there for all its peccadilloes.
+ *
+ * @see Integer#parseInt(String)
  */
 public class IntegerConverter implements TypeConverter<Integer> {
 
+	/**
+	 * Convert a string into a Integer or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Integer if the string is
+	 * parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see Integer#parseInt(String)
+	 */
 	@Override
 	public Integer convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

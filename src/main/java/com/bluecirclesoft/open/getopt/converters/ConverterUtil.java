@@ -76,6 +76,13 @@ public final class ConverterUtil {
 		return true;
 	}
 
+	/**
+	 * Get the default converter for a given class,
+	 *
+	 * @param paramClass the class
+	 * @param <T>        the specific type of the class
+	 * @return the converter, or null if the class has no default converter
+	 */
 	public static <T> TypeConverter<T> getDefaultConverter(Class<T> paramClass) {
 
 		return DEFAULT_CONVERTERS.get(paramClass);

@@ -19,8 +19,8 @@ limitations under the License.
 package com.bluecirclesoft.open.getopt;
 
 /**
- * This exception is thrown when there's an error in the command line options (user did not meet the
- * expectation of the software).
+ * This exception is thrown when there's an error in the user-supplied command line arguments (user
+ * did not meet the expectation of the software).
  *
  * @see OptionProcessingException
  */

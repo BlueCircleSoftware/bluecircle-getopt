@@ -22,10 +22,21 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Longs. This converter uses  {@code Long.parseLong()},
+ * so look there for all its peccadilloes.
+ *
+ * @see Long#parseLong(String)
  */
 public class LongConverter implements TypeConverter<Long> {
 
+	/**
+	 * Convert a string into a Long or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Long if the string is parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see Long#parseLong(String)
+	 */
 	@Override
 	public Long convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

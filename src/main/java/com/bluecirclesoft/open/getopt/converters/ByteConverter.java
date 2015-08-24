@@ -22,10 +22,21 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Bytes. This converter uses  {@code Byte.parseByte()},
+ * so look there for all its peccadilloes.
+ *
+ * @see Byte#parseByte(String)
  */
 public class ByteConverter implements TypeConverter<Byte> {
 
+	/**
+	 * Convert a string into a Byte or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Byte if the string is parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see Byte#parseByte(String)
+	 */
 	@Override
 	public Byte convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

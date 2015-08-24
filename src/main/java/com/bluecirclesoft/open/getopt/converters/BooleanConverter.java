@@ -21,10 +21,20 @@ package com.bluecirclesoft.open.getopt.converters;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Booleans. This converter uses  {@code Boolean
+ * .parseBoolean()}, so look there for all its peccadilloes.
+ *
+ * @see Boolean#parseBoolean(String)
  */
 public class BooleanConverter implements TypeConverter<Boolean> {
 
+	/**
+	 * Convert a string into a Boolean or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Boolean as if by parseBoolean.
+	 * @see Boolean#parseBoolean(String)
+	 */
 	@Override
 	public Boolean convert(String input) {
 		if (ConverterUtil.isEmpty(input)) {

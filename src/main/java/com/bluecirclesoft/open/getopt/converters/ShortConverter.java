@@ -22,10 +22,21 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Shorts. This converter uses  {@code Short.parseShort()},
+ * so look there for all its peccadilloes.
+ *
+ * @see Short#parseShort(String)
  */
 public class ShortConverter implements TypeConverter<Short> {
 
+	/**
+	 * Convert a string into a Short or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Short if the string is parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see Short#parseShort(String)
+	 */
 	@Override
 	public Short convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {

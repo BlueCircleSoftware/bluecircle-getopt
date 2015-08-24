@@ -22,10 +22,22 @@ import com.bluecirclesoft.open.getopt.CommandLineOptionException;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
- * TODO document me
+ * Converter to parse parameter strings into Doubles. This converter uses  {@code
+ * Double.parseDouble()}, so look there for all its peccadilloes.
+ *
+ * @see Double#parseDouble(String)
  */
 public class DoubleConverter implements TypeConverter<Double> {
 
+	/**
+	 * Convert a string into a Double or null.
+	 *
+	 * @param input the input string
+	 * @return {@code null} if {@code input} is null or blank, or a Double if the string is
+	 * parseable
+	 * @throws CommandLineOptionException if the parse fails
+	 * @see Double#parseDouble(String)
+	 */
 	@Override
 	public Double convert(String input) throws CommandLineOptionException {
 		if (ConverterUtil.isEmpty(input)) {
