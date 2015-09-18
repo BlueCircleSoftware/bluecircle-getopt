@@ -15,13 +15,13 @@
  *
  */
 
-package com.bluecirclesoft.open.getopt.converters;
-
-import com.bluecirclesoft.open.getopt.TypeConverter;
+package com.bluecirclesoft.open.getopt;
 
 /**
- * An undefined tag class
+ * TODO document me
  */
-public abstract class UseTheDefaultConverter implements TypeConverter {
-
+public enum ArgumentSpecification {
+	NONE,
+	OPTIONAL,
+	REQUIRED;
 }

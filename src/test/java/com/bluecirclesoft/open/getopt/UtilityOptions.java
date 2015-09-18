@@ -15,13 +15,40 @@
  *
  */
 
-package com.bluecirclesoft.open.getopt.converters;
-
-import com.bluecirclesoft.open.getopt.TypeConverter;
+package com.bluecirclesoft.open.getopt;
 
 /**
- * An undefined tag class
+ * Options for my utility
  */
-public abstract class UseTheDefaultConverter implements TypeConverter {
+public class UtilityOptions {
 
+	private String input = "-";
+
+	private String output = "-";
+
+	private boolean verbose = false;
+
+	public String getInput() {
+		return input;
+	}
+
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 }

@@ -15,13 +15,18 @@
  *
  */
 
-package com.bluecirclesoft.open.getopt.converters;
-
-import com.bluecirclesoft.open.getopt.TypeConverter;
+package com.bluecirclesoft.open.getopt;
 
 /**
- * An undefined tag class
+ * This exception is thrown when there's an error in the user-supplied command line arguments (user
+ * did not meet the expectation of the software).
+ *
+ * @see GetOptSetupException
  */
-public abstract class UseTheDefaultConverter implements TypeConverter {
 
+public class CommandLineProcessingException extends RuntimeException {
+
+	public CommandLineProcessingException(String s) {
+		super(s);
+	}
 }

@@ -17,42 +17,47 @@
 
 package com.bluecirclesoft.open.getopt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * TODO document me
  */
-public class ReceptacleA {
+public class OptionReceiver<T> {
 
-	@ByArgument(shortOpt = "a", longOpt = "option-one", mnemonic = "opt", documentation = "value for option one")
-	private String opt1;
+	private List<T> results = new ArrayList<>();
 
-	@ByFlag(shortOpt = "b", documentation = "option 2?")
-	private boolean opt2;
-
-	private short opt3;
-
-	public String getOpt1() {
-		return opt1;
+	public OptionReceiver() {
 	}
 
-	public void setOpt1(String opt1) {
-		this.opt1 = opt1;
+	public OptionReceiver(T defaultValue) {
+		results.add(defaultValue);
 	}
 
-	public boolean isOpt2() {
-		return opt2;
+	public T getResult() {
+		switch (results.size()) {
+			case 0:
+				return null;
+			case 1:
+				return results.get(0);
+			default:
+				throw new GetOptUsageException("Option was specified more than once");
+		}
 	}
 
-	public void setOpt2(boolean opt2) {
-		this.opt2 = opt2;
+	public List<T> getResults() {
+		return results;
 	}
 
-	public short getOpt3() {
-		return opt3;
+	void setResult(T result) {
+		if (results.isEmpty()) {
+			results.add(result);
+		} else {
+			results.set(0, result);
+		}
 	}
 
-	@ByArgument(shortOpt = "c", longOpt = {"opt3", "option-3"}, documentation = "Option 3",
-			mnemonic = "o3")
-	public void setOpt3(short opt3) {
-		this.opt3 = opt3;
+	void addResult(T result) {
+		results.add(result);
 	}
 }

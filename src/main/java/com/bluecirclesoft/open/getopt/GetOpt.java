@@ -1,32 +1,32 @@
 /*
-
-Copyright 2015 Blue Circle Software, LLC.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+ * Copyright 2015 Blue Circle Software, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.bluecirclesoft.open.getopt;
 
 import com.bluecirclesoft.open.getopt.converters.ConverterUtil;
 import com.bluecirclesoft.open.getopt.converters.UseTheDefaultConverter;
+import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavor;
+import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavors;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -92,40 +92,37 @@ import java.util.function.Consumer;
 
 public class GetOpt {
 
+	public static final CommandLineProcessingFlavors DEFAULT_FLAVOR =
+			CommandLineProcessingFlavors.GNU_GETOPT;
+
 	private final String programName;
 
-	private final Map<Character, ParameterDef<?>> byShort_ = new HashMap<>();
+	private final CommandLineProcessingFlavor flavor;
 
-	private final SortedMap<String, ParameterDef<?>> byLong_ = new TreeMap<>();
+	private final Map<Character, OptionSpecification> byShort_ = new HashMap<>();
 
-	private final Set<ParameterDef> options = new HashSet<>();
+	private final SortedMap<String, OptionSpecification> byLong_ = new TreeMap<>();
+
+	private final Set<OptionSpecification> options = new HashSet<>();
 
 	private boolean hasShortOpt(Character ch) {
 		return byShort_.containsKey(ch);
 	}
 
-	private ParameterDef<?> getShortOptSetup(Character ch) {
-		ParameterDef<?> def = byShort_.get(ch);
+	public OptionSpecification getShortOptProcessing(Character ch) {
+		OptionSpecification def = byShort_.get(ch);
 		if (def == null) {
-			throw new OptionProcessingException("No such option -" + ch);
-		}
-		return def;
-	}
-
-	private ParameterDef<?> getShortOptProcessing(Character ch) throws CommandLineOptionException {
-		ParameterDef<?> def = byShort_.get(ch);
-		if (def == null) {
-			throw new CommandLineOptionException("No such option -" + ch);
+			throw new CommandLineProcessingException("No such option -" + ch);
 		}
 		return def;
 	}
 
 	private List<String> getLongMatches(String str) {
-		SortedMap<String, ParameterDef<?>> tail = byLong_.tailMap(str);
-		Iterator<Entry<String, ParameterDef<?>>> possibleMatchIt = tail.entrySet().iterator();
+		SortedMap<String, OptionSpecification> tail = byLong_.tailMap(str);
+		Iterator<Entry<String, OptionSpecification>> possibleMatchIt = tail.entrySet().iterator();
 		List<String> possibleMatches = new ArrayList<>();
 		while (possibleMatchIt.hasNext()) {
-			Entry<String, ParameterDef<?>> ent = possibleMatchIt.next();
+			Entry<String, OptionSpecification> ent = possibleMatchIt.next();
 			if (ent.getKey().startsWith(str)) {
 				possibleMatches.add(ent.getKey());
 			} else {
@@ -135,7 +132,7 @@ public class GetOpt {
 		return possibleMatches;
 	}
 
-	private ParameterDef<?> getLongOpt(String str, Collection<String> problems) {
+	public OptionSpecification getLongOpt(String str, Collection<String> problems) {
 		if (byLong_.containsKey(str)) {
 			return byLong_.get(str);
 		}
@@ -162,8 +159,9 @@ public class GetOpt {
 	 *
 	 * @param programName The name of the program (for the usage message)
 	 */
-	private GetOpt(String programName) {
+	private GetOpt(String programName, CommandLineProcessingFlavors flavor) {
 		this.programName = programName;
+		this.flavor = flavor.getBuilder().apply(this);
 	}
 
 	/**
@@ -172,7 +170,7 @@ public class GetOpt {
 	 * @param programName The name of the program (for the usage message)
 	 */
 	public static GetOpt create(String programName) {
-		return new GetOpt(programName);
+		return create(programName, DEFAULT_FLAVOR);
 	}
 
 	/**
@@ -182,6 +180,25 @@ public class GetOpt {
 	 */
 	public static GetOpt create(Class mainClass) {
 		return create(mainClass.getName());
+	}
+
+
+	/**
+	 * Factory method.
+	 *
+	 * @param programName The name of the program (for the usage message)
+	 */
+	public static GetOpt create(String programName, CommandLineProcessingFlavors flavor) {
+		return new GetOpt(programName, flavor);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param mainClass The class name of the program (for the usage message)
+	 */
+	public static GetOpt create(Class mainClass, CommandLineProcessingFlavors flavor) {
+		return create(mainClass.getName(), flavor);
 	}
 
 	public static GetOpt createFromReceptacle(Object receptacle, String programName) {
@@ -196,111 +213,123 @@ public class GetOpt {
 		return getOpt;
 	}
 
+	public static GetOpt createFromReceptacle(Object receptacle, String programName,
+	                                          CommandLineProcessingFlavors flavor) {
+		GetOpt getOpt = create(programName, flavor);
+		getOpt.defineFromClass(receptacle);
+		return getOpt;
+	}
+
+	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass,
+	                                          CommandLineProcessingFlavors flavor) {
+		GetOpt getOpt = create(mainClass, flavor);
+		getOpt.defineFromClass(receptacle);
+		return getOpt;
+	}
+
 	private void defineFromClass(Object receptacle) {
 		Class definitionClass = receptacle.getClass();
 		for (Field field : definitionClass.getDeclaredFields()) {
-			Parameter parameter = field.getAnnotation(Parameter.class);
-			Flag flag = field.getAnnotation(Flag.class);
+			ByArgument byArgument = field.getAnnotation(ByArgument.class);
+			ByFlag byFlag = field.getAnnotation(ByFlag.class);
 			Class type = field.getType();
-			if (parameter != null && flag != null) {
-				throw new OptionProcessingException(
-						"Both @Flag and @Parameter set on " + field + "; " +
-								"should be one or the other, but not both");
-			} else if (parameter != null) {
-				processParameterAnnotation(parameter, type, (Object newValue) -> {
+			if (byArgument != null && byFlag != null) {
+				throw new GetOptSetupException("Both @Flag and @Parameter set on " + field + "; " +
+						"should be one or the other, but not both");
+			} else if (byArgument != null) {
+				processParameterAnnotation(byArgument, type, (Object newValue) -> {
 					field.setAccessible(true);
 					try {
 						field.set(receptacle, newValue);
 					} catch (IllegalAccessException e) {
-						throw new OptionProcessingException("Exception setting field " + field, e);
+						throw new GetOptSetupException("Exception setting field " + field, e);
 					}
 				});
-			} else if (flag != null) {
+			} else if (byFlag != null) {
 				if (type != Boolean.class && type != Boolean.TYPE) {
-					throw new OptionProcessingException("Field " + field + " must be boolean to " +
+					throw new GetOptSetupException("Field " + field + " must be boolean to " +
 							"be annotated with @Flag");
 				}
-				processFlagAnnotation(flag, (Boolean newValue) -> {
+				processFlagAnnotation(byFlag, (Boolean newValue) -> {
 					field.setAccessible(true);
 					try {
 						field.set(receptacle, newValue);
 					} catch (IllegalAccessException e) {
-						throw new OptionProcessingException("Exception setting field " + field, e);
+						throw new GetOptSetupException("Exception setting field " + field, e);
 					}
 				});
 			}
 		}
 		for (Method method : definitionClass.getDeclaredMethods()) {
-			Parameter parameter = method.getAnnotation(Parameter.class);
-			Flag flag = method.getAnnotation(Flag.class);
-			if (parameter == null && flag == null) {
+			ByArgument byArgument = method.getAnnotation(ByArgument.class);
+			ByFlag byFlag = method.getAnnotation(ByFlag.class);
+			if (byArgument == null && byFlag == null) {
 				continue;
 			}
-			if (parameter != null && flag != null) {
-				throw new OptionProcessingException(
-						"Both @Flag and @Parameter set on " + method + "; " +
-								"should be one or the other, but not both");
+			if (byArgument != null && byFlag != null) {
+				throw new GetOptSetupException("Both @Flag and @Parameter set on " + method + "; " +
+						"should be one or the other, but not both");
 			}
 			if (method.getReturnType() != Void.TYPE || method.getParameters().length > 1) {
-				throw new OptionProcessingException("Method " + method + ": methods annotated " +
+				throw new GetOptSetupException("Method " + method + ": methods annotated " +
 						"with @Flag or @Parameter must be 'setters'; that is, they must take " +
 						"one parameter and return 'void'");
 			}
 			Class type = method.getParameters()[0].getType();
-			if (parameter != null) {
-				processParameterAnnotation(parameter, type, (Object newValue) -> {
+			if (byArgument != null) {
+				processParameterAnnotation(byArgument, type, (Object newValue) -> {
 					method.setAccessible(true);
 					try {
 						method.invoke(receptacle, newValue);
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						throw new OptionProcessingException("Exception invoking " + method, e);
+						throw new GetOptSetupException("Exception invoking " + method, e);
 					}
 				});
 			} else {
 				if (type != Boolean.class && type != Boolean.TYPE) {
-					throw new OptionProcessingException(
-							"Method " + method + " must take boolean to " +
-									"be annotated with @Flag");
+					throw new GetOptSetupException("Method " + method + " must take boolean to " +
+							"be annotated with @Flag");
 				}
-				processFlagAnnotation(flag, (Boolean newValue) -> {
+				processFlagAnnotation(byFlag, (Boolean newValue) -> {
 					method.setAccessible(true);
 					try {
 						method.invoke(receptacle, newValue);
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						throw new OptionProcessingException("Exception invoking " + method, e);
+						throw new GetOptSetupException("Exception invoking " + method, e);
 					}
 				});
 			}
 		}
 	}
 
-	private <M> void processParameterAnnotation(Parameter parameter, Class<M> type,
+	private <M> void processParameterAnnotation(ByArgument byArgument, Class<M> type,
 	                                            Consumer<M> setter) {
 		TypeConverter<M> converter;
 		Class<? extends TypeConverter<M>> converterClass =
-				(Class<? extends TypeConverter<M>>) parameter.converter();
-		if (parameter.converter() != UseTheDefaultConverter.class) {
+				(Class<? extends TypeConverter<M>>) byArgument.converter();
+		if (byArgument.converter() != UseTheDefaultConverter.class) {
 			try {
 				converter = converterClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new OptionProcessingException(
+				throw new GetOptSetupException(
 						"Cannot instantiate type converter " + converterClass, e);
 			}
 		} else {
 			converter = ConverterUtil.getDefaultConverter(type);
 			if (converter == null) {
-				throw new OptionProcessingException("Could not find a type converter class for " +
+				throw new GetOptSetupException("Could not find a type converter class for " +
 						"type " + type.getName());
 			}
 		}
 
-		ParameterDef<M> def = ReceptacleParameterDef.makeParameter(this, type, parameter.mnemonic(),
-				parameter.documentation(), parameter.required(), converter, setter);
-		for (String opt : parameter.shortOpt()) {
+		OptionSpecification def = OptionSpecification.makeOption(this, byArgument.mnemonic(),
+				byArgument.documentation(), byArgument.required(), ArgumentSpecification.REQUIRED,
+				null, (argument) -> setter.accept(converter.convert(argument)));
+		for (String opt : byArgument.shortOpt()) {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
 				if (opt.length() > 1) {
-					throw new OptionProcessingException("Short option string " + opt +
+					throw new GetOptSetupException("Short option string " + opt +
 							" is more than one character");
 				}
 				shortOptChar = opt.charAt(0);
@@ -309,21 +338,21 @@ public class GetOpt {
 				def.addShortOpt(shortOptChar);
 			}
 		}
-		for (String opt : parameter.longOpt()) {
+		for (String opt : byArgument.longOpt()) {
 			if (opt != null && !opt.isEmpty()) {
 				def.addLongOpt(opt);
 			}
 		}
 	}
 
-	private void processFlagAnnotation(Flag flag, Consumer<Boolean> setter) {
-		ParameterDef<Boolean> def =
-				ReceptacleParameterDef.makeFlag(this, flag.documentation(), setter);
-		for (String opt : flag.shortOpt()) {
+	private void processFlagAnnotation(ByFlag byFlag, Consumer<Boolean> setter) {
+		OptionSpecification def =
+				OptionSpecification.makeFlag(this, byFlag.documentation(), setter);
+		for (String opt : byFlag.shortOpt()) {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
 				if (opt.length() > 1) {
-					throw new OptionProcessingException("Short option string '" + opt +
+					throw new GetOptSetupException("Short option string '" + opt +
 							"' is more than one character");
 				}
 				shortOptChar = opt.charAt(0);
@@ -332,7 +361,7 @@ public class GetOpt {
 				def.addShortOpt(shortOptChar);
 			}
 		}
-		for (String opt : flag.longOpt()) {
+		for (String opt : byFlag.longOpt()) {
 			if (opt != null && !opt.isEmpty()) {
 				def.addLongOpt(opt);
 			}
@@ -340,7 +369,7 @@ public class GetOpt {
 	}
 
 	/**
-	 * Add a flag-type option (true or false)
+	 * Add an option without an argument (a flag - true or false)
 	 *
 	 * @param documentation Documentation to display when generating the usage message. May not be
 	 *                      null.
@@ -350,172 +379,63 @@ public class GetOpt {
 	 * @throws IllegalArgumentException if either ShortOpt or LongOpt has already been added
 	 */
 
-	public ParameterDef<Boolean> addFlag(String documentation) {
+	public OptionSpecification addFlag(String documentation, Consumer<Boolean> onEncounter) {
 		// Step 1 - determine whether we need to throw any exceptions,
 		// so that 'this' will be left in a consistent state
 
 		if (documentation == null || documentation.isEmpty()) {
-			throw new IllegalArgumentException("must give documentation for parameters");
+			throw new GetOptSetupException("documentation is not specified");
 		}
 
 		// Step 2 - add the options to this
-		ParameterDef<Boolean> ph =
-				ManualParameterDef.makeFlag(this, Boolean.class, null, documentation);
+		OptionSpecification ph = OptionSpecification.makeFlag(this, documentation, onEncounter);
 		options.add(ph);
 		return ph;
 	}
 
 	/**
-	 * Add a parameter-type option (with a value to be passed in). The wrapper method is usually
-	 * handier, except when the short opt is <b>null </b>.
+	 * Add an option with argument (with a value to be passed in).
 	 *
 	 * @param paramMnemonic A short name for the parameter. May not be null.
 	 * @param documentation Documentation to display when generating the usage message. May not be
 	 *                      null.
-	 * @param required      Whether the flag is required.
-	 * @throws IllegalArgumentException if both ShortOpt and LongOpt are null
-	 * @throws IllegalArgumentException if Documentation is null or zero length
-	 * @throws IllegalArgumentException if ParamMnemonic is null or zero length
-	 * @throws IllegalArgumentException if either ShortOpt or LongOpt has already been added
+	 * @param required      Whether the option is required to be specified on the command line
+	 * @param type          the type that the argument should be converted to
+	 * @param onEncounter   the function to invoke when the option is encountered
+	 * @throws GetOptSetupException if documentation is null or zero length
+	 * @throws GetOptSetupException if paramMnemonic is null or zero length
 	 */
-	public <T> ParameterDef<T> addParam(Class<T> type, String paramMnemonic, String documentation,
-	                                    boolean required) {
+	public <T> OptionSpecification addParam(String paramMnemonic, String documentation,
+	                                        boolean required, Class<T> type, Consumer<T> onEncounter) {
 		if (documentation == null || documentation.isEmpty()) {
-			throw new IllegalArgumentException("must give documentation for parameters");
+			throw new GetOptSetupException("documentation is not specified");
 		}
 		if (paramMnemonic == null || paramMnemonic.isEmpty()) {
-			throw new IllegalArgumentException("must give parameter mnemonic for parameters");
+			throw new GetOptSetupException("argument mnemonic is not specified");
 		}
 
-		ParameterDef<T> ph =
-				ManualParameterDef.makeParameter(this, type, paramMnemonic, documentation,
-						required);
+		OptionSpecification ph =
+				OptionSpecification.makeOption(this, paramMnemonic, documentation, required,
+						ArgumentSpecification.REQUIRED, null, argument -> onEncounter.accept(
+								ConverterUtil.getDefaultConverter(type).convert(argument)));
 		options.add(ph);
 		return ph;
 	}
 
-	public ParameterDef<String> addParam(String paramMnemonic, String documentation,
-	                                     boolean required) {
-		return addParam(String.class, paramMnemonic, documentation, required);
-	}
-
 	/**
-	 * Process the command line
+	 * Add an option with argument (with a value to be passed in).
 	 *
-	 * @param params The command line parameters
-	 * @return The remaining parameters after processing is over
-	 * @throws CommandLineOptionException if any of the command line processing semantics are
-	 *                                    violated. The message will contain a usage message in
-	 *                                    traditional unix style.
+	 * @param paramMnemonic A short name for the parameter. May not be null.
+	 * @param documentation Documentation to display when generating the usage message. May not be
+	 *                      null.
+	 * @param required      Whether the option is required to be specified on the command line
+	 * @param onEncounter   the function to invoke when the option is encountered
+	 * @throws GetOptSetupException if documentation is null or zero length
+	 * @throws GetOptSetupException if paramMnemonic is null or zero length
 	 */
-	public ArrayList<String> processParams(String... params) throws CommandLineOptionException {
-		List<String> x = new ArrayList<>();
-		Collections.addAll(x, params);
-		return processParams(x);
-	}
-
-	/**
-	 * Process the command line
-	 *
-	 * @param params The command line parameters
-	 * @return The remaining parameters after processing is over
-	 * @throws CommandLineOptionException if any of the command line processing semantics are
-	 *                                    violated
-	 */
-	public ArrayList<String> processParams(List<String> params) throws CommandLineOptionException {
-		int paramNum;
-		Collection<String> problems = new ArrayList<>();
-
-		for (paramNum = 0; paramNum < params.size(); paramNum++) {
-			String param = params.get(paramNum);
-			if ("--".equals(param)) {
-				// stop processing; skip this parameter, and return
-				// the rest
-				paramNum++;
-				break;
-			} else if (param.length() < 2) {
-				// this is a non-option parameter; stop processing
-				break;
-			} else if (param.charAt(0) == '-') {
-				// this is an option parameter
-				if (param.charAt(1) == '-') {
-					// long option processing
-					String longOptIn = param.substring(2);
-					ParameterDef match = getLongOpt(longOptIn, problems);
-					if (match != null) {
-						if (match.isTakesParam()) {
-							if (paramNum + 1 == params.size()) {
-								problems.add("Option --" + longOptIn +
-										" requires a parameter, but the command line doesn't have any more");
-							} else {
-								paramNum++;
-								match.setParameterValue(params.get(paramNum));
-							}
-						} else {
-							match.setFlagPresent();
-						}
-					}
-				} else {
-					// single dash
-					for (int j = 1; j < param.length(); j++) {
-						char pChar = param.charAt(j);
-						ParameterDef<?> shortOpt = getShortOptProcessing(pChar);
-
-						if (shortOpt != null) {
-							if (shortOpt.isTakesParam()) {
-								if (paramNum + 1 == params.size()) {
-									problems.add("Option -" + pChar +
-											" requires a parameter, but the command line doesn't have any more");
-								} else {
-									paramNum++;
-									shortOpt.setParameterValue(params.get(paramNum));
-									break;
-								}
-							} else {
-								shortOpt.setFlagPresent();
-								break;
-							}
-						} else {
-							problems.add("Unknown option: -" + pChar);
-						}
-					}
-				}
-			} else {
-				// this is a non-option parameter; stop processing
-				break;
-			}
-		}
-
-		// Look for required options that were not passed
-		for (ParameterDef x : options) {
-			if (x.isTakesParam() && x.isRequired() && !x.isSet()) {
-				String p;
-				if (!x.getLongOptList().isEmpty()) {
-					p = "--" + x.getLongOptList().get(0);
-				} else {
-					p = "-" + x.getShortOptList().get(0);
-				}
-				problems.add("required option " + p + " was not given");
-			}
-		}
-
-		// Were there problems?
-		if (!problems.isEmpty()) {
-			StringBuilder errStr = new StringBuilder();
-			errStr.append("\n");
-			for (String problem : problems) {
-				errStr.append("error: ").append(problem).append("\n");
-			}
-			usage(errStr);
-			throw new CommandLineOptionException(errStr.toString());
-		}
-
-		// build results
-		ArrayList<String> out = new ArrayList<>();
-		for (int q = paramNum; q < params.size(); q++) {
-			out.add(params.get(q));
-		}
-		return out;
+	public OptionSpecification addParam(String paramMnemonic, String documentation,
+	                                    boolean required, Consumer<String> onEncounter) {
+		return addParam(paramMnemonic, documentation, required, String.class, onEncounter);
 	}
 
 	/**
@@ -523,9 +443,9 @@ public class GetOpt {
 	 *
 	 * @param errStr the output string builder
 	 */
-	private void usage(StringBuilder errStr) {
+	public void usage(StringBuilder errStr) {
 		errStr.append("usage:\n");
-		for (ParameterDef def : options) {
+		for (OptionSpecification def : options) {
 			ParameterDescription desc = def.getDescription();
 			errStr.append('\n');
 			for (String opt : desc.getOptionDescriptions()) {
@@ -541,26 +461,55 @@ public class GetOpt {
 		}
 	}
 
-	public <T> void addShortOpt(ParameterDef parameterDef, Character opt) {
+	public <T> void addShortOpt(OptionSpecification optionSpecification, Character opt) {
 		if (hasShortOpt(opt)) {
-			throw new OptionProcessingException(
-					"Short option -" + opt + " specified more than once");
+			throw new GetOptSetupException("Short option -" + opt + " specified more than once");
 		}
-		byShort_.put(opt, parameterDef);
+		byShort_.put(opt, optionSpecification);
 	}
 
-	public <T> void addLongOpt(ParameterDef parameterDef, String opt) {
+	public <T> void addLongOpt(OptionSpecification optionSpecification, String opt) {
 		if (byLong_.containsKey(opt)) {
-			throw new OptionProcessingException("Long option " + opt + " has already been defined");
+			throw new GetOptSetupException("Long option " + opt + " has already been defined");
 		}
-		byLong_.put(opt, parameterDef);
+		byLong_.put(opt, optionSpecification);
 	}
 
 	public boolean isFlagSet(char shortOpt) {
-		ParameterDef<?> parameterDef = byShort_.get(shortOpt);
-		if (parameterDef == null) {
-			throw new OptionProcessingException("Short option '" + shortOpt + "' not defined");
+		OptionSpecification optionSpecification = byShort_.get(shortOpt);
+		if (optionSpecification == null) {
+			throw new GetOptSetupException("Short option '" + shortOpt + "' not defined");
 		}
-		return parameterDef.isSet();
+		return optionSpecification.isSpecified();
 	}
+
+	public Set<OptionSpecification> getOptions() {
+		return options;
+	}
+
+	/**
+	 * Process the command line
+	 *
+	 * @param params The command line parameters
+	 * @return The remaining parameters after processing is over
+	 * @throws CommandLineProcessingException if any of the command line processing semantics are
+	 *                                        violated. The message will contain a usage message in
+	 *                                        traditional unix style.
+	 */
+	List<String> processParams(String... params) {
+		return flavor.processParams(params);
+	}
+
+	/**
+	 * Process the command line
+	 *
+	 * @param params The command line parameters
+	 * @return The remaining parameters after processing is over
+	 * @throws CommandLineProcessingException if any of the command line processing semantics are
+	 *                                        violated
+	 */
+	List<String> processParams(List<String> params) {
+		return flavor.processParams(params);
+	}
+
 }
