@@ -19,7 +19,7 @@ package com.bluecirclesoft.open.getopt;
 
 /**
  * Defines a converter that converts the given string to the desired type.  Used for the parameter
- * -> object annotations.
+ * -&gt; object annotations.
  */
 @FunctionalInterface
 public interface TypeConverter<T> {
