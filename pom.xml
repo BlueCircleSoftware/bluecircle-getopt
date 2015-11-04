@@ -15,13 +15,25 @@
   ~
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bluecirclesoft.open</groupId>
     <artifactId>getopt</artifactId>
     <version>1.1-SNAPSHOT</version>
     <name>bluecircle-getopt</name>
+    <description>bluecircle-getopt - A simple Java getopt processor</description>
+    <url>http://www.example.com/example-application</url>
+
+    <developers>
+        <developer>
+            <name>Marc Ramirez</name>
+            <email>mrami@bluecirclesoft.com</email>
+            <organization>Blue Circle Software, LLC</organization>
+            <organizationUrl>http://www.bluecirclesoft.com</organizationUrl>
+        </developer>
+    </developers>
 
     <licenses>
         <license>
@@ -36,8 +48,8 @@
         <url>scm:git:git@github.com:mrami4/bluecircle-getopt.git</url>
         <developerConnection>scm:git:git@github.com:mrami4/bluecircle-getopt.git
         </developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
