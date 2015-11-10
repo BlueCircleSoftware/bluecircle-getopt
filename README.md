@@ -1,5 +1,14 @@
 # bluecircle-getopt - A simple Java getopt processor
 
+## Latest Release
+
+	<dependency>
+		<groupId>com.bluecirclesoft.open</groupId>
+		<artifactId>getopt</artifactId>
+		<version>1.2</version>
+	</dependency>
+
+
 ## What is it?
 
 *bluecircle-getopt* is a simple library for processing command-line options in the spirit of GNU 
