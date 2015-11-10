@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * <li>Take your command line and pass it to <code><b>processParams()</b></code></li> <li>Read the
  * parameters out of the class using <code><b>get...Value()</b></code></li> <li>...</li>
  * <li>Profit!</li> </ol>
- * <p>
+ * <p></p>
  * An example of the automatic usage statement (as rendered by a standard printStackTrace()):
  * <pre>
  *
