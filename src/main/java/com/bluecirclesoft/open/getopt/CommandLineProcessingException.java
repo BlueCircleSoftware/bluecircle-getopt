@@ -26,7 +26,15 @@ package com.bluecirclesoft.open.getopt;
 
 public class CommandLineProcessingException extends RuntimeException {
 
-	public CommandLineProcessingException(String s) {
-		super(s);
+	public CommandLineProcessingException(String s, GetOpt options) {
+		super(createExceptionMessage(s, options));
+	}
+
+	private static String createExceptionMessage(String s, GetOpt options) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(s);
+		sb.append("\n");
+		options.usage(sb);
+		return sb.toString();
 	}
 }

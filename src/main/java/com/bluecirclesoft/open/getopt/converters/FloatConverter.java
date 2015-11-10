@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -37,15 +39,16 @@ public class FloatConverter implements TypeConverter<Float> {
 	 * @see Float#parseFloat(String)
 	 */
 	@Override
-	public Float convert(String input)  {
+	public Float convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
 			try {
 				return Float.parseFloat(input);
 			} catch (NumberFormatException e) {
-				throw new CommandLineProcessingException("The value '" + input + "' must be a " +
-						"floating-point number");
+				throw new CommandLineProcessingException(
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " +
+								"floating-point number", options);
 			}
 		}
 	}

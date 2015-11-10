@@ -19,6 +19,7 @@ package com.bluecirclesoft.open.getopt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class OptionSpecification {
@@ -41,7 +42,7 @@ public class OptionSpecification {
 
 	private final List<Consumer<Boolean>> onEncounterNoArgument = new ArrayList<>();
 
-	private final List<Consumer<String>> onEncounterWithArgument = new ArrayList<>();
+	private final List<BiConsumer<String, OptionSpecification>> onEncounterWithArgument = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -56,10 +57,8 @@ public class OptionSpecification {
 	 * @param onEncounterWithArg    the function to call when this option is encountered on the
 	 *                              command line (with an argument)
 	 */
-	OptionSpecification(GetOpt parent, boolean required,
-	                    ArgumentSpecification argumentSpecification, String mnemonic,
-	                    String documentation, Consumer<Boolean> onEncounterNoArg,
-	                    Consumer<String> onEncounterWithArg) {
+	OptionSpecification(GetOpt parent, boolean required, ArgumentSpecification argumentSpecification, String mnemonic, String documentation,
+	                    Consumer<Boolean> onEncounterNoArg, BiConsumer<String, OptionSpecification> onEncounterWithArg) {
 		switch (argumentSpecification) {
 			case NONE:
 				if (onEncounterNoArg == null) {
@@ -92,8 +91,7 @@ public class OptionSpecification {
 				}
 				break;
 			default:
-				throw new GetOptSetupException(
-						"Internal error: unhandled argumentSpecification:" + argumentSpecification);
+				throw new GetOptSetupException("Internal error: unhandled argumentSpecification:" + argumentSpecification);
 		}
 		this.parent = parent;
 		this.argumentSpecification = argumentSpecification;
@@ -162,19 +160,17 @@ public class OptionSpecification {
 
 	public void encounter(String argument) {
 		if (argumentSpecification == ArgumentSpecification.NONE) {
-			throw new GetOptSetupException(
-					"Option " + makeOptionDescriptor() + " does not take an argument");
+			throw new GetOptSetupException("Option " + makeOptionDescriptor() + " does not take an argument");
 		}
 		specified = true;
-		for (Consumer<String> acceptor : onEncounterWithArgument) {
-			acceptor.accept(argument);
+		for (BiConsumer<String, OptionSpecification> acceptor : onEncounterWithArgument) {
+			acceptor.accept(argument, this);
 		}
 	}
 
 	public void encounter(boolean on) {
 		if (argumentSpecification == ArgumentSpecification.REQUIRED) {
-			throw new GetOptSetupException(
-					"Option " + makeOptionDescriptor() + " requires an argument");
+			throw new GetOptSetupException("Option " + makeOptionDescriptor() + " requires an argument");
 		}
 		specified = true;
 		for (Consumer<Boolean> acceptor : onEncounterNoArgument) {
@@ -191,19 +187,15 @@ public class OptionSpecification {
 		return specified;
 	}
 
-	public static OptionSpecification makeFlag(GetOpt parent, String documentation,
-	                                           Consumer<Boolean> onEncounterNoArgument) {
-		return new OptionSpecification(parent, false, ArgumentSpecification.NONE, null,
-				documentation, onEncounterNoArgument, null);
+	public static OptionSpecification makeFlag(GetOpt parent, String documentation, Consumer<Boolean> onEncounterNoArgument) {
+		return new OptionSpecification(parent, false, ArgumentSpecification.NONE, null, documentation, onEncounterNoArgument, null);
 	}
 
-	public static OptionSpecification makeOption(GetOpt parent, String mnemonic,
-	                                             String documentation, boolean required,
-	                                             ArgumentSpecification argumentSpecification,
-	                                             Consumer<Boolean> onEncounterNoArgument,
-	                                             Consumer<String> onEncounterWithArgument) {
-		return new OptionSpecification(parent, required, argumentSpecification, mnemonic,
-				documentation, onEncounterNoArgument, onEncounterWithArgument);
+	public static OptionSpecification makeOption(GetOpt parent, String mnemonic, String documentation, boolean required,
+	                                             ArgumentSpecification argumentSpecification, Consumer<Boolean> onEncounterNoArgument,
+	                                             BiConsumer<String, OptionSpecification> onEncounterWithArgument) {
+		return new OptionSpecification(parent, required, argumentSpecification, mnemonic, documentation, onEncounterNoArgument,
+				onEncounterWithArgument);
 	}
 
 	public OptionReceiver<Boolean> makeFlagReceiver() {
@@ -214,7 +206,7 @@ public class OptionSpecification {
 
 	public OptionReceiver<String> makeArgumentReceiver() {
 		final OptionReceiver<String> receiver = new OptionReceiver<>();
-		onEncounterWithArgument.add(receiver::addResult);
+		onEncounterWithArgument.add((s, optionSpecification) -> receiver.addResult(s));
 		return receiver;
 	}
 }

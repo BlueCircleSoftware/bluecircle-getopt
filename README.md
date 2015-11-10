@@ -72,23 +72,22 @@ public class UtilityOptions {
 ```java
 	...
 	
-	public static void main(String[] args) {
+	public static int main(String... args) {
 		final UtilityOptions options = new UtilityOptions();
-		GetOpt getOpt = GetOpt.create("myutility");
+		GetOpt getOpt = GetOpt.create("myutility [OPTIONS] file...");
 		getOpt.addParam("file", "the input file (- for standard input)", false, options::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");
 		getOpt.addParam("file", "the output file (- for standard output)", false, options::setOutput)
 				.addShortOpt('o')
 				.addLongOpt("output-file");
-		getOpt.addFlag("produce verbose output", options::setVerbose)
-				.addShortOpt('v')
-				.addLongOpt("verbose");
+		getOpt.addFlag("produce verbose output", options::setVerbose).addShortOpt('v').addLongOpt("verbose");
+		List<String> remainingCommandLine;
 		try {
-			options.processParams(args);
-		} catch (CommandLineOptionException e) {
+			remainingCommandLine = getOpt.processParams(args);
+		} catch (CommandLineProcessingException e) {
 			System.err.println(e.getMessage());
-			System.exit(1);
+			return 1;
 		}
 
 		if (options.isVerbose()) {
@@ -142,14 +141,17 @@ public class UtilityOptions {
 ```
 
 ```java
-	public static void main(String[] args) {
-		final UtilityOptions receptacle = new UtilityOptions();
-		GetOpt options = GetOpt.createFromReceptacle(receptacle, "myUtility");
+	...
+	
+	public static int main(String... args) {
+		final UtilityOptions options = new UtilityOptions();
+		GetOpt getOpt = GetOpt.createFromReceptacle(options, "myUtility [OPTIONS] file...");
+		List<String> remainingCommandLine;
 		try {
-			options.processParams(args);
-		} catch (CommandLineOptionException e) {
+			remainingCommandLine = getOpt.processParams(args);
+		} catch (CommandLineProcessingException e) {
 			System.err.println(e.getMessage());
-			System.exit(1);
+			return 1;
 		}
 
 		if (options.isVerbose()) {
@@ -162,7 +164,12 @@ Whenever there's an error due to user malfunction, the library will produce a Co
 contains a usage message, like so:
 
 	error: Option -i requires a parameter, but the command line doesn't have any more
+	
 	usage:
+	myutility [OPTIONS] file...
+	  -v
+	  --verbose
+		produce verbose output
 	
 	  -o <file>
 	  --output-file <file>
@@ -171,9 +178,5 @@ contains a usage message, like so:
 	  -i <file>
 	  --input-file <file>
 		the input file (- for standard input)
-	
-	  -v
-	  --verbose
-		produce verbose output
 	
 	

@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -38,15 +40,16 @@ public class DoubleConverter implements TypeConverter<Double> {
 	 * @see Double#parseDouble(String)
 	 */
 	@Override
-	public Double convert(String input) {
+	public Double convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
 			try {
 				return Double.parseDouble(input);
 			} catch (NumberFormatException e) {
-				throw new CommandLineProcessingException("The value '" + input + "' must be a " +
-						"floating-point number");
+				throw new CommandLineProcessingException(
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " +
+								"floating-point number", options);
 			}
 		}
 	}

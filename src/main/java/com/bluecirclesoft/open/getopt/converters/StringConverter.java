@@ -17,6 +17,8 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -31,7 +33,7 @@ public class StringConverter implements TypeConverter<String> {
 	 * @return same string
 	 */
 	@Override
-	public String convert(String input) {
+	public String convert(String input, GetOpt options, OptionSpecification option) {
 		return input;
 	}
 }

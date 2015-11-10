@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -37,7 +39,7 @@ public class ShortConverter implements TypeConverter<Short> {
 	 * @see Short#parseShort(String)
 	 */
 	@Override
-	public Short convert(String input) {
+	public Short convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
@@ -45,8 +47,8 @@ public class ShortConverter implements TypeConverter<Short> {
 				return Short.parseShort(input);
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"The value '" + input + "' must be a number " +
-						"between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
+								"between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE, options);
 			}
 		}
 	}

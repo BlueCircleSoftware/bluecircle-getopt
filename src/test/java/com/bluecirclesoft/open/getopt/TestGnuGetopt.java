@@ -151,8 +151,8 @@ public class TestGnuGetopt {
 	public void testOptAfterNonOptPosixlyCorrect() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class,
-				CommandLineProcessingFlavors.GNU_GETOPT_POSIXLY_CORRECT);
+		GetOpt getOpt =
+				GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, CommandLineProcessingFlavors.GNU_GETOPT_POSIXLY_CORRECT);
 		List<String> result = getOpt.processParams("q", "--a-value", "a");
 		Assert.assertEquals(3, result.size());
 		Assert.assertEquals("q", result.get(0));

@@ -17,6 +17,8 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -35,7 +37,7 @@ public class BooleanConverter implements TypeConverter<Boolean> {
 	 * @see Boolean#parseBoolean(String)
 	 */
 	@Override
-	public Boolean convert(String input) {
+	public Boolean convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {

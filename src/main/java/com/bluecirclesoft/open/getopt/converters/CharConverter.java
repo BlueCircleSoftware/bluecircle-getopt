@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -33,11 +35,12 @@ public class CharConverter implements TypeConverter<Character> {
 	 * @throws CommandLineProcessingException if the string has more than one character
 	 */
 	@Override
-	public Character convert(String input) {
+	public Character convert(String input, GetOpt options, OptionSpecification option) {
 		if (input == null || input.isEmpty()) {
 			return null;
 		} else if (input.length() > 1) {
-			throw new CommandLineProcessingException("Parameter can only be one character");
+			throw new CommandLineProcessingException("Option " + option.makeOptionDescriptor() + ": the parameter can only be one " +
+					"character", options);
 		} else {
 			return input.charAt(0);
 		}

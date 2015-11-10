@@ -129,8 +129,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 			for (String problem : problems) {
 				errStr.append("error: ").append(problem).append("\n");
 			}
-			creator.usage(errStr);
-			throw new CommandLineProcessingException(errStr.toString());
+			throw new CommandLineProcessingException(errStr.toString(), creator);
 		}
 
 		return nonOptions;
@@ -142,8 +141,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 		}
 	}
 
-	private int processShortOption(List<String> params, int paramNum, Collection<String> problems,
-	                               String param) {
+	private int processShortOption(List<String> params, int paramNum, Collection<String> problems, String param) {
 		for (int j = 1; j < param.length(); j++) {
 			char pChar = param.charAt(j);
 			OptionSpecification shortOpt = creator.getShortOptProcessing(pChar);
@@ -175,8 +173,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 		return paramNum;
 	}
 
-	private int processLongOption(List<String> params, int paramNum, Collection<String> problems,
-	                              String param) {
+	private int processLongOption(List<String> params, int paramNum, Collection<String> problems, String param) {
 		String longOptIn = param.substring(2);
 		int equalPos = longOptIn.indexOf('=');
 		String paramValue = null;

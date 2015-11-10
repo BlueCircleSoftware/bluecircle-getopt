@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -38,7 +40,7 @@ public class IntegerConverter implements TypeConverter<Integer> {
 	 * @see Integer#parseInt(String)
 	 */
 	@Override
-	public Integer convert(String input) {
+	public Integer convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
@@ -46,8 +48,8 @@ public class IntegerConverter implements TypeConverter<Integer> {
 				return Integer.parseInt(input);
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"The value '" + input + "' must be a number " +
-						"between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
+								"between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE, options);
 			}
 		}
 	}

@@ -34,18 +34,10 @@ public class TestGetOpt {
 	@Before
 	public void setUp() {
 		defaultOptions = GetOpt.create("Test");
-		defaultOptions.addFlag("blah", on -> encountered.put("a", on))
-				.addShortOpt('a')
-				.addLongOpt("alpha");
-		defaultOptions.addFlag("blah", on -> encountered.put("b", on))
-				.addShortOpt('b')
-				.addLongOpt("beta");
-		defaultOptions.addFlag("blah", on -> encountered.put("c", on))
-				.addShortOpt('c')
-				.addLongOpt("gamma");
-		defaultOptions.addFlag("blah", on -> encountered.put("d", on))
-				.addShortOpt('d')
-				.addLongOpt("delta");
+		defaultOptions.addFlag("blah", on -> encountered.put("a", on)).addShortOpt('a').addLongOpt("alpha");
+		defaultOptions.addFlag("blah", on -> encountered.put("b", on)).addShortOpt('b').addLongOpt("beta");
+		defaultOptions.addFlag("blah", on -> encountered.put("c", on)).addShortOpt('c').addLongOpt("gamma");
+		defaultOptions.addFlag("blah", on -> encountered.put("d", on)).addShortOpt('d').addLongOpt("delta");
 		encountered = new HashMap<>();
 	}
 
@@ -108,9 +100,7 @@ public class TestGetOpt {
 	@Test
 	public void testAddFail1() {
 		try {
-			defaultOptions.addFlag("blah", on -> encountered.put("a", on))
-					.addShortOpt('a')
-					.addLongOpt("alpha");
+			defaultOptions.addFlag("blah", on -> encountered.put("a", on)).addShortOpt('a').addLongOpt("alpha");
 			Assert.fail("should have gotten OptionProcessingException");
 		} catch (GetOptSetupException ignored) {
 		}
@@ -120,9 +110,7 @@ public class TestGetOpt {
 	public void testAddFail2() {
 		try {
 			// alpha already there
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alpha");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alpha");
 			Assert.fail("should have gotten OptionProcessingException");
 		} catch (GetOptSetupException ignored) {
 		}
@@ -132,9 +120,7 @@ public class TestGetOpt {
 	public void testAddSuccess3f() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should be no match
 			String[] x = {"--alph0"};
 			defaultOptions.processParams(x);
@@ -147,9 +133,7 @@ public class TestGetOpt {
 	public void testAddSuccess3e() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should match --alpha
 			String[] x = {"--alpha"};
 			defaultOptions.processParams(x);
@@ -164,9 +148,7 @@ public class TestGetOpt {
 	public void testAddSuccess3d() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should match --alpha
 			String[] x = {"--alph"};
 			defaultOptions.processParams(x);
@@ -181,9 +163,7 @@ public class TestGetOpt {
 	public void testAddSuccess3c() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should match --alp
 			String[] x = {"--alp"};
 			defaultOptions.processParams(x);
@@ -198,9 +178,7 @@ public class TestGetOpt {
 	public void testAddSuccess3b() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should be ambiguous
 			String[] x = {"--al"};
 			defaultOptions.processParams(x);
@@ -213,9 +191,7 @@ public class TestGetOpt {
 	public void testAddSuccess3a() {
 		try {
 			setUp();
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alp");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alp");
 			// should be ambiguous
 			String[] x = {"--a"};
 			defaultOptions.processParams(x);
@@ -226,17 +202,13 @@ public class TestGetOpt {
 
 	@Test
 	public void testAddSuccess4() {
-		defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-				.addShortOpt('e')
-				.addLongOpt("alpharetta");
+		defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alpharetta");
 	}
 
 	@Test
 	public void testAddFail5() {
 		try {
-			defaultOptions.addFlag("blah", on -> encountered.put("e", on))
-					.addShortOpt('e')
-					.addLongOpt("alpho");
+			defaultOptions.addFlag("blah", on -> encountered.put("e", on)).addShortOpt('e').addLongOpt("alpho");
 			String[] x = {"--alp"};
 			defaultOptions.processParams(x);
 			Assert.fail("should have gotten CommandLineOptionException");
@@ -315,13 +287,13 @@ public class TestGetOpt {
 	public void testExampleFluent1() {
 		final UtilityOptions receptacle = new UtilityOptions();
 		GetOpt options = GetOpt.create("myutility");
-		options.addParam("file", "the input file (- for standard input)", false,
-				receptacle::setInput).addShortOpt('i').addLongOpt("input-file");
-		options.addParam("file", "the output file (- for standard output)", false,
-				receptacle::setOutput).addShortOpt('o').addLongOpt("output-file");
-		options.addFlag("produce verbose output", receptacle::setVerbose)
-				.addShortOpt('v')
-				.addLongOpt("verbose");
+		options.addParam("file", "the input file (- for standard input)", false, receptacle::setInput)
+				.addShortOpt('i')
+				.addLongOpt("input-file");
+		options.addParam("file", "the output file (- for standard output)", false, receptacle::setOutput)
+				.addShortOpt('o')
+				.addLongOpt("output-file");
+		options.addFlag("produce verbose output", receptacle::setVerbose).addShortOpt('v').addLongOpt("verbose");
 		try {
 			options.processParams("-v");
 		} catch (CommandLineProcessingException e) {
@@ -352,13 +324,13 @@ public class TestGetOpt {
 	public void testExampleFluent2() {
 		final UtilityOptions receptacle = new UtilityOptions();
 		GetOpt options = GetOpt.create("myutility");
-		options.addParam("file", "the input file (- for standard input)", false,
-				receptacle::setInput).addShortOpt('i').addLongOpt("input-file");
-		options.addParam("file", "the output file (- for standard output)", false,
-				receptacle::setOutput).addShortOpt('o').addLongOpt("output-file");
-		options.addFlag("produce verbose output", receptacle::setVerbose)
-				.addShortOpt('v')
-				.addLongOpt("verbose");
+		options.addParam("file", "the input file (- for standard input)", false, receptacle::setInput)
+				.addShortOpt('i')
+				.addLongOpt("input-file");
+		options.addParam("file", "the output file (- for standard output)", false, receptacle::setOutput)
+				.addShortOpt('o')
+				.addLongOpt("output-file");
+		options.addFlag("produce verbose output", receptacle::setVerbose).addShortOpt('v').addLongOpt("verbose");
 		try {
 			options.processParams();
 		} catch (CommandLineProcessingException e) {
@@ -377,11 +349,10 @@ public class TestGetOpt {
 		getOpt.addParam("file", "the input file (- for standard input)", false, options::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");
-		getOpt.addParam("file", "the output file (- for standard output)", false,
-				options::setOutput).addShortOpt('o').addLongOpt("output-file");
-		getOpt.addFlag("produce verbose output", options::setVerbose)
-				.addShortOpt('v')
-				.addLongOpt("verbose");
+		getOpt.addParam("file", "the output file (- for standard output)", false, options::setOutput)
+				.addShortOpt('o')
+				.addLongOpt("output-file");
+		getOpt.addFlag("produce verbose output", options::setVerbose).addShortOpt('v').addLongOpt("verbose");
 		try {
 			getOpt.processParams("-v", "-i");
 			Assert.fail("Should have failed");

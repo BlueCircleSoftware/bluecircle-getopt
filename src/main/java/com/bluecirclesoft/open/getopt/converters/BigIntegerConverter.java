@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 import java.math.BigInteger;
@@ -37,7 +39,7 @@ public class BigIntegerConverter implements TypeConverter<BigInteger> {
 	 * @see BigInteger#BigInteger(String)
 	 */
 	@Override
-	public BigInteger convert(String input) {
+	public BigInteger convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
@@ -45,7 +47,7 @@ public class BigIntegerConverter implements TypeConverter<BigInteger> {
 				return new BigInteger(input);
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"The value '" + input + "' must be an integer");
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be an integer", options);
 			}
 		}
 	}

@@ -15,22 +15,27 @@
  *
  */
 
-package com.bluecirclesoft.open.getopt;
+package test;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /**
- * Defines a converter that converts the given string to the desired type.  Used for the parameter
- * -&gt; object annotations.
+ * Test the examples outside the getopt package to make sure I don't accidentally hide the interface again.
  */
-@FunctionalInterface
-public interface TypeConverter<T> {
+public class TestExamples {
 
-	/**
-	 * Convert the given string into an object of the specified type
-	 *
-	 * @param input   the input string
-	 * @param options the options set in use (you'll want this for the usage())
-	 * @param option  the specific option whose argument we're trying to parse
-	 * @return the object, or {@code null} if appropriate
-	 */
-	T convert(String input, GetOpt options, OptionSpecification option);
+	private static final Logger logger = Logger.getLogger(TestExamples.class.getName());
+
+
+	@Test
+	public void testExample1() {
+		Assert.assertEquals(0, GetOptExample1.main("-i", "-", "-v"));
+		Assert.assertEquals(0, GetOptExample1.main());
+		Assert.assertEquals(1, GetOptExample1.main("-i"));
+
+	}
+
 }

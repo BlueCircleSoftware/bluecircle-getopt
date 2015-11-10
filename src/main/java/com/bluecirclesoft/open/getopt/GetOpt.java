@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * <li>Take your command line and pass it to <code><b>processParams()</b></code></li> <li>Read the
  * parameters out of the class using <code><b>get...Value()</b></code></li> <li>...</li>
  * <li>Profit!</li> </ol>
- * <p>
+ * <p/>
  * An example of the automatic usage statement (as rendered by a standard printStackTrace()):
  * <pre>
  *
@@ -92,8 +92,7 @@ import java.util.function.Consumer;
 
 public class GetOpt {
 
-	public static final CommandLineProcessingFlavors DEFAULT_FLAVOR =
-			CommandLineProcessingFlavors.GNU_GETOPT;
+	public static final CommandLineProcessingFlavors DEFAULT_FLAVOR = CommandLineProcessingFlavors.GNU_GETOPT;
 
 	private final String programName;
 
@@ -112,7 +111,7 @@ public class GetOpt {
 	public OptionSpecification getShortOptProcessing(Character ch) {
 		OptionSpecification def = byShort_.get(ch);
 		if (def == null) {
-			throw new CommandLineProcessingException("No such option -" + ch);
+			throw new CommandLineProcessingException("No such option -" + ch, this);
 		}
 		return def;
 	}
@@ -213,15 +212,13 @@ public class GetOpt {
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, String programName,
-	                                          CommandLineProcessingFlavors flavor) {
+	public static GetOpt createFromReceptacle(Object receptacle, String programName, CommandLineProcessingFlavors flavor) {
 		GetOpt getOpt = create(programName, flavor);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass,
-	                                          CommandLineProcessingFlavors flavor) {
+	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, CommandLineProcessingFlavors flavor) {
 		GetOpt getOpt = create(mainClass, flavor);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
@@ -302,17 +299,14 @@ public class GetOpt {
 		}
 	}
 
-	private <M> void processParameterAnnotation(ByArgument byArgument, Class<M> type,
-	                                            Consumer<M> setter) {
+	private <M> void processParameterAnnotation(ByArgument byArgument, Class<M> type, Consumer<M> setter) {
 		TypeConverter<M> converter;
-		Class<? extends TypeConverter<M>> converterClass =
-				(Class<? extends TypeConverter<M>>) byArgument.converter();
+		Class<? extends TypeConverter<M>> converterClass = (Class<? extends TypeConverter<M>>) byArgument.converter();
 		if (byArgument.converter() != UseTheDefaultConverter.class) {
 			try {
 				converter = converterClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new GetOptSetupException(
-						"Cannot instantiate type converter " + converterClass, e);
+				throw new GetOptSetupException("Cannot instantiate type converter " + converterClass, e);
 			}
 		} else {
 			converter = ConverterUtil.getDefaultConverter(type);
@@ -322,9 +316,10 @@ public class GetOpt {
 			}
 		}
 
-		OptionSpecification def = OptionSpecification.makeOption(this, byArgument.mnemonic(),
-				byArgument.documentation(), byArgument.required(), ArgumentSpecification.REQUIRED,
-				null, (argument) -> setter.accept(converter.convert(argument)));
+		OptionSpecification def =
+				OptionSpecification.makeOption(this, byArgument.mnemonic(), byArgument.documentation(), byArgument.required(),
+						ArgumentSpecification.REQUIRED, null,
+						(argument, opt) -> setter.accept(converter.convert(argument, GetOpt.this, opt)));
 		for (String opt : byArgument.shortOpt()) {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
@@ -346,8 +341,7 @@ public class GetOpt {
 	}
 
 	private void processFlagAnnotation(ByFlag byFlag, Consumer<Boolean> setter) {
-		OptionSpecification def =
-				OptionSpecification.makeFlag(this, byFlag.documentation(), setter);
+		OptionSpecification def = OptionSpecification.makeFlag(this, byFlag.documentation(), setter);
 		for (String opt : byFlag.shortOpt()) {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
@@ -405,8 +399,8 @@ public class GetOpt {
 	 * @throws GetOptSetupException if documentation is null or zero length
 	 * @throws GetOptSetupException if paramMnemonic is null or zero length
 	 */
-	public <T> OptionSpecification addParam(String paramMnemonic, String documentation,
-	                                        boolean required, Class<T> type, Consumer<T> onEncounter) {
+	public <T> OptionSpecification addParam(String paramMnemonic, String documentation, boolean required, Class<T> type,
+	                                        Consumer<T> onEncounter) {
 		if (documentation == null || documentation.isEmpty()) {
 			throw new GetOptSetupException("documentation is not specified");
 		}
@@ -415,9 +409,8 @@ public class GetOpt {
 		}
 
 		OptionSpecification ph =
-				OptionSpecification.makeOption(this, paramMnemonic, documentation, required,
-						ArgumentSpecification.REQUIRED, null, argument -> onEncounter.accept(
-								ConverterUtil.getDefaultConverter(type).convert(argument)));
+				OptionSpecification.makeOption(this, paramMnemonic, documentation, required, ArgumentSpecification.REQUIRED, null,
+						(argument, opt) -> onEncounter.accept(ConverterUtil.getDefaultConverter(type).convert(argument, this, opt)));
 		options.add(ph);
 		return ph;
 	}
@@ -433,9 +426,14 @@ public class GetOpt {
 	 * @throws GetOptSetupException if documentation is null or zero length
 	 * @throws GetOptSetupException if paramMnemonic is null or zero length
 	 */
-	public OptionSpecification addParam(String paramMnemonic, String documentation,
-	                                    boolean required, Consumer<String> onEncounter) {
+	public OptionSpecification addParam(String paramMnemonic, String documentation, boolean required, Consumer<String> onEncounter) {
 		return addParam(paramMnemonic, documentation, required, String.class, onEncounter);
+	}
+
+	public String usage() {
+		StringBuilder stringBuilder = new StringBuilder();
+		usage(stringBuilder);
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -445,6 +443,7 @@ public class GetOpt {
 	 */
 	public void usage(StringBuilder errStr) {
 		errStr.append("usage:\n");
+		errStr.append(programName);
 		for (OptionSpecification def : options) {
 			ParameterDescription desc = def.getDescription();
 			errStr.append('\n');
@@ -496,7 +495,7 @@ public class GetOpt {
 	 *                                        violated. The message will contain a usage message in
 	 *                                        traditional unix style.
 	 */
-	List<String> processParams(String... params) {
+	public List<String> processParams(String... params) {
 		return flavor.processParams(params);
 	}
 
@@ -508,7 +507,7 @@ public class GetOpt {
 	 * @throws CommandLineProcessingException if any of the command line processing semantics are
 	 *                                        violated
 	 */
-	List<String> processParams(List<String> params) {
+	public List<String> processParams(List<String> params) {
 		return flavor.processParams(params);
 	}
 

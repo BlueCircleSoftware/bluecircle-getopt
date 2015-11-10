@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
@@ -37,16 +39,15 @@ public class ByteConverter implements TypeConverter<Byte> {
 	 * @see Byte#parseByte(String)
 	 */
 	@Override
-	public Byte convert(String input) {
+	public Byte convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
 			try {
 				return Byte.parseByte(input);
 			} catch (NumberFormatException e) {
-				throw new CommandLineProcessingException(
-						"The value '" + input + "' must be a number " +
-						"between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE);
+				throw new CommandLineProcessingException("Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be" +
+						" a number between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE, options);
 			}
 		}
 	}

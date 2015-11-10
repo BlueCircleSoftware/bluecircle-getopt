@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class OptionReceiver<T> {
 
-	private List<T> results = new ArrayList<>();
+	private final List<T> results = new ArrayList<>();
 
 	public OptionReceiver() {
 	}

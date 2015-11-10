@@ -18,6 +18,8 @@
 package com.bluecirclesoft.open.getopt.converters;
 
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
 
 import java.math.BigDecimal;
@@ -37,7 +39,7 @@ public class BigDecimalConverter implements TypeConverter<BigDecimal> {
 	 * @see BigDecimal#BigDecimal(String)
 	 */
 	@Override
-	public BigDecimal convert(String input) {
+	public BigDecimal convert(String input, GetOpt options, OptionSpecification option) {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
@@ -45,7 +47,8 @@ public class BigDecimalConverter implements TypeConverter<BigDecimal> {
 				return new BigDecimal(input);
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"The value '" + input + "' must be an integer or decimal number");
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be an integer or decimal number",
+						options);
 			}
 		}
 	}
