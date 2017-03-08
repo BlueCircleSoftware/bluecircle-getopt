@@ -16,7 +16,6 @@ public class UsageTest {
 			getOpt.processParams("-x", "3");
 		} catch (CommandLineProcessingException e) {
 			String usage = e.getMessage();
-			System.out.println(usage);
 			Assert.assertEquals("No such option -x\n" + "usage:\n" + "testReceptacleA -b [ --a <opt> ] [ --c <o3> ]\n" + "  -a <opt>\n" +
 					"  --option-one <opt>\n" + "    value for option one\n" + "\n" + "  -b\n" + "    option 2?\n" + "\n" + "  -c <o3>\n" +
 					"  --opt3 <o3>\n" + "  --option-3 <o3>\n" + "    Option 3\n", usage);
