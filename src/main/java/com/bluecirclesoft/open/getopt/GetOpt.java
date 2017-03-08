@@ -17,11 +17,6 @@
 
 package com.bluecirclesoft.open.getopt;
 
-import com.bluecirclesoft.open.getopt.converters.ConverterUtil;
-import com.bluecirclesoft.open.getopt.converters.UseTheDefaultConverter;
-import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavor;
-import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavors;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,6 +32,11 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+
+import com.bluecirclesoft.open.getopt.converters.ConverterUtil;
+import com.bluecirclesoft.open.getopt.converters.UseTheDefaultConverter;
+import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavor;
+import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavors;
 
 /**
  * Simple class for doing command line argument processing. <ul> <li>Supports both flags (option is
@@ -95,6 +95,8 @@ public class GetOpt {
 	public static final CommandLineProcessingFlavors DEFAULT_FLAVOR = CommandLineProcessingFlavors.GNU_GETOPT;
 
 	private final String programName;
+
+	private final String restOfParamsDescription;
 
 	private final CommandLineProcessingFlavor flavor;
 
@@ -158,9 +160,10 @@ public class GetOpt {
 	 *
 	 * @param programName The name of the program (for the usage message)
 	 */
-	private GetOpt(String programName, CommandLineProcessingFlavors flavor) {
+	private GetOpt(String programName, CommandLineProcessingFlavors flavor, String restOfParamsDescription) {
 		this.programName = programName;
 		this.flavor = flavor.getBuilder().apply(this);
+		this.restOfParamsDescription = restOfParamsDescription;
 	}
 
 	/**
@@ -168,8 +171,8 @@ public class GetOpt {
 	 *
 	 * @param programName The name of the program (for the usage message)
 	 */
-	public static GetOpt create(String programName) {
-		return create(programName, DEFAULT_FLAVOR);
+	public static GetOpt create(String programName, String restOfParamsDescription) {
+		return create(programName, restOfParamsDescription, DEFAULT_FLAVOR);
 	}
 
 	/**
@@ -177,8 +180,8 @@ public class GetOpt {
 	 *
 	 * @param mainClass The class name of the program (for the usage message)
 	 */
-	public static GetOpt create(Class mainClass) {
-		return create(mainClass.getName());
+	public static GetOpt create(Class mainClass, String restOfParamsDescription) {
+		return create(mainClass.getName(), restOfParamsDescription);
 	}
 
 
@@ -187,8 +190,8 @@ public class GetOpt {
 	 *
 	 * @param programName The name of the program (for the usage message)
 	 */
-	public static GetOpt create(String programName, CommandLineProcessingFlavors flavor) {
-		return new GetOpt(programName, flavor);
+	public static GetOpt create(String programName, String restOfParamsDescription, CommandLineProcessingFlavors flavor) {
+		return new GetOpt(programName, flavor, restOfParamsDescription);
 	}
 
 	/**
@@ -196,30 +199,32 @@ public class GetOpt {
 	 *
 	 * @param mainClass The class name of the program (for the usage message)
 	 */
-	public static GetOpt create(Class mainClass, CommandLineProcessingFlavors flavor) {
-		return create(mainClass.getName(), flavor);
+	public static GetOpt create(Class mainClass, String restOfParamsDescription, CommandLineProcessingFlavors flavor) {
+		return create(mainClass.getName(), restOfParamsDescription, flavor);
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, String programName) {
-		GetOpt getOpt = create(programName);
+	public static GetOpt createFromReceptacle(Object receptacle, String programName, String restOfParamsDescription) {
+		GetOpt getOpt = create(programName, restOfParamsDescription);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass) {
-		GetOpt getOpt = create(mainClass);
+	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, String restOfParamsDescription) {
+		GetOpt getOpt = create(mainClass, restOfParamsDescription);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, String programName, CommandLineProcessingFlavors flavor) {
-		GetOpt getOpt = create(programName, flavor);
+	public static GetOpt createFromReceptacle(Object receptacle, String programName, String restOfParamsDescription,
+	                                          CommandLineProcessingFlavors flavor) {
+		GetOpt getOpt = create(programName, restOfParamsDescription, flavor);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, CommandLineProcessingFlavors flavor) {
-		GetOpt getOpt = create(mainClass, flavor);
+	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, String restOfParamsDescription,
+	                                          CommandLineProcessingFlavors flavor) {
+		GetOpt getOpt = create(mainClass, restOfParamsDescription, flavor);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
 	}
@@ -231,8 +236,8 @@ public class GetOpt {
 			ByFlag byFlag = field.getAnnotation(ByFlag.class);
 			Class type = field.getType();
 			if (byArgument != null && byFlag != null) {
-				throw new GetOptSetupException("Both @Flag and @Parameter set on " + field + "; " +
-						"should be one or the other, but not both");
+				throw new GetOptSetupException(
+						"Both @ByFlag and @ByArgument set on " + field + "; " + "should be one or the other, but not both");
 			} else if (byArgument != null) {
 				processParameterAnnotation(byArgument, type, (Object newValue) -> {
 					field.setAccessible(true);
@@ -244,8 +249,7 @@ public class GetOpt {
 				});
 			} else if (byFlag != null) {
 				if (type != Boolean.class && type != Boolean.TYPE) {
-					throw new GetOptSetupException("Field " + field + " must be boolean to " +
-							"be annotated with @Flag");
+					throw new GetOptSetupException("Field " + field + " must be boolean to " + "be annotated with @ByFlag");
 				}
 				processFlagAnnotation(byFlag, (Boolean newValue) -> {
 					field.setAccessible(true);
@@ -264,13 +268,12 @@ public class GetOpt {
 				continue;
 			}
 			if (byArgument != null && byFlag != null) {
-				throw new GetOptSetupException("Both @Flag and @Parameter set on " + method + "; " +
-						"should be one or the other, but not both");
+				throw new GetOptSetupException(
+						"Both @Flag and @Parameter set on " + method + "; " + "should be one or the other, but not both");
 			}
 			if (method.getReturnType() != Void.TYPE || method.getParameters().length > 1) {
 				throw new GetOptSetupException("Method " + method + ": methods annotated " +
-						"with @Flag or @Parameter must be 'setters'; that is, they must take " +
-						"one parameter and return 'void'");
+						"with @Flag or @Parameter must be 'setters'; that is, they must take " + "one parameter and return 'void'");
 			}
 			Class type = method.getParameters()[0].getType();
 			if (byArgument != null) {
@@ -284,8 +287,7 @@ public class GetOpt {
 				});
 			} else {
 				if (type != Boolean.class && type != Boolean.TYPE) {
-					throw new GetOptSetupException("Method " + method + " must take boolean to " +
-							"be annotated with @Flag");
+					throw new GetOptSetupException("Method " + method + " must take boolean to " + "be annotated with @Flag");
 				}
 				processFlagAnnotation(byFlag, (Boolean newValue) -> {
 					method.setAccessible(true);
@@ -311,8 +313,7 @@ public class GetOpt {
 		} else {
 			converter = ConverterUtil.getDefaultConverter(type);
 			if (converter == null) {
-				throw new GetOptSetupException("Could not find a type converter class for " +
-						"type " + type.getName());
+				throw new GetOptSetupException("Could not find a type converter class for " + "type " + type.getName());
 			}
 		}
 
@@ -324,8 +325,7 @@ public class GetOpt {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
 				if (opt.length() > 1) {
-					throw new GetOptSetupException("Short option string " + opt +
-							" is more than one character");
+					throw new GetOptSetupException("Short option string " + opt + " is more than one character");
 				}
 				shortOptChar = opt.charAt(0);
 			}
@@ -346,8 +346,7 @@ public class GetOpt {
 			Character shortOptChar = null;
 			if (opt != null && !opt.isEmpty()) {
 				if (opt.length() > 1) {
-					throw new GetOptSetupException("Short option string '" + opt +
-							"' is more than one character");
+					throw new GetOptSetupException("Short option string '" + opt + "' is more than one character");
 				}
 				shortOptChar = opt.charAt(0);
 			}
@@ -442,9 +441,73 @@ public class GetOpt {
 	 * @param errStr the output string builder
 	 */
 	public void usage(StringBuilder errStr) {
+		Set<OptionSpecification> sampleCommandDisplayed = new HashSet<>();
 		errStr.append("usage:\n");
 		errStr.append(programName);
+		boolean needsDash = true;
+
+		SortedMap<String, OptionSpecification> shortFlagsAlpha = new TreeMap<>();
+		SortedMap<String, OptionSpecification> otherOptsAlpha = new TreeMap<>();
+
+		// dump all the short options
 		for (OptionSpecification def : options) {
+			if (def.getShortOptList().size() != 0 && def.isFlag()) {
+				shortFlagsAlpha.put(String.valueOf(def.getShortOptList().get(0)), def);
+			}
+		}
+
+		for (Entry<String, OptionSpecification> entry : shortFlagsAlpha.entrySet()) {
+			if (needsDash) {
+				errStr.append(" -");
+				needsDash = false;
+			}
+			errStr.append(entry.getKey());
+			sampleCommandDisplayed.add(entry.getValue());
+		}
+
+		// now dump any long options that we haven't already dumped
+		for (OptionSpecification def : options) {
+			if (!sampleCommandDisplayed.contains(def)) {
+				if (def.getShortOptList().size() != 0) {
+					otherOptsAlpha.put(String.valueOf(def.getShortOptList().get(0)), def);
+				} else if (def.getLongOptList().size() != 0) {
+					otherOptsAlpha.put(def.getLongOptList().get(0), def);
+				}
+			}
+		}
+
+		for (Entry<String, OptionSpecification> entry : otherOptsAlpha.entrySet()) {
+			OptionSpecification def = entry.getValue();
+			if (def.isCommandLineOptional()) {
+				errStr.append(" [");
+			}
+			errStr.append(" --");
+			errStr.append(entry.getKey());
+			String mnemonic = def.getMnemonic();
+			if (mnemonic != null) {
+				errStr.append(" <").append(mnemonic).append(">");
+			}
+			if (def.isCommandLineOptional()) {
+				errStr.append(" ]");
+			}
+		}
+
+		if (restOfParamsDescription != null) {
+			errStr.append(" ");
+			errStr.append(restOfParamsDescription);
+		}
+
+		// generate long descriptions
+		SortedMap<String, OptionSpecification> all = new TreeMap<>();
+		for (OptionSpecification option : options) {
+			if (option.getShortOptList().size() != 0) {
+				all.put("-" + option.getShortOptList().get(0), option);
+			} else if (option.getLongOptList().size() != 0) {
+				all.put("--" + option.getLongOptList().get(0), option);
+			}
+		}
+
+		for (OptionSpecification def : all.values()) {
 			ParameterDescription desc = def.getDescription();
 			errStr.append('\n');
 			for (String opt : desc.getOptionDescriptions()) {
@@ -465,6 +528,7 @@ public class GetOpt {
 			throw new GetOptSetupException("Short option -" + opt + " specified more than once");
 		}
 		byShort_.put(opt, optionSpecification);
+		options.add(optionSpecification);
 	}
 
 	public <T> void addLongOpt(OptionSpecification optionSpecification, String opt) {
@@ -472,6 +536,7 @@ public class GetOpt {
 			throw new GetOptSetupException("Long option " + opt + " has already been defined");
 		}
 		byLong_.put(opt, optionSpecification);
+		options.add(optionSpecification);
 	}
 
 	public boolean isFlagSet(char shortOpt) {

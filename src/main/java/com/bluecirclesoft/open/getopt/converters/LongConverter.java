@@ -44,7 +44,7 @@ public class LongConverter implements TypeConverter<Long> {
 			return null;
 		} else {
 			try {
-				return Long.parseLong(input);
+				return Long.parseLong(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
 						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +

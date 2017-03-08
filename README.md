@@ -5,7 +5,7 @@
 	<dependency>
 		<groupId>com.bluecirclesoft.open</groupId>
 		<artifactId>getopt</artifactId>
-		<version>1.2</version>
+		<version>1.3</version>
 	</dependency>
 
 
@@ -81,9 +81,9 @@ public class UtilityOptions {
 ```java
 	...
 	
-	public static int main(String... args) {
+	public static void main(String... args) {
 		final UtilityOptions options = new UtilityOptions();
-		GetOpt getOpt = GetOpt.create("myutility [OPTIONS] file...");
+		GetOpt getOpt = GetOpt.create("myutility", "file...");
 		getOpt.addParam("file", "the input file (- for standard input)", false, options::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");
@@ -96,7 +96,7 @@ public class UtilityOptions {
 			remainingCommandLine = getOpt.processParams(args);
 		} catch (CommandLineProcessingException e) {
 			System.err.println(e.getMessage());
-			return 1;
+			return;
 		}
 
 		if (options.isVerbose()) {
@@ -152,15 +152,15 @@ public class UtilityOptions {
 ```java
 	...
 	
-	public static int main(String... args) {
+	public static void main(String... args) {
 		final UtilityOptions options = new UtilityOptions();
-		GetOpt getOpt = GetOpt.createFromReceptacle(options, "myUtility [OPTIONS] file...");
+		GetOpt getOpt = GetOpt.createFromReceptacle(options, "myUtility", "file...");
 		List<String> remainingCommandLine;
 		try {
 			remainingCommandLine = getOpt.processParams(args);
 		} catch (CommandLineProcessingException e) {
 			System.err.println(e.getMessage());
-			return 1;
+			return;
 		}
 
 		if (options.isVerbose()) {
@@ -175,17 +175,17 @@ contains a usage message, like so:
 	error: Option -i requires a parameter, but the command line doesn't have any more
 	
 	usage:
-	myutility [OPTIONS] file...
-	  -v
-	  --verbose
-		produce verbose output
+	myutility -v [ --i <file> ] [ --o <file> ] file...
+	  -i <file>
+	  --input-file <file>
+		the input file (- for standard input)
 	
 	  -o <file>
 	  --output-file <file>
 		the output file (- for standard output)
 	
-	  -i <file>
-	  --input-file <file>
-		the input file (- for standard input)
+	  -v
+	  --verbose
+		produce verbose output
 	
 	

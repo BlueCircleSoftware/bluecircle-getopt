@@ -17,11 +17,12 @@
 
 package com.bluecirclesoft.open.getopt;
 
-import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavors;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
+import com.bluecirclesoft.open.getopt.flavors.CommandLineProcessingFlavors;
 
 /**
  * Test class for the GNU getopt style processing
@@ -32,7 +33,7 @@ public class TestGnuGetopt {
 	public void testShortTwoStrings() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-a", "a");
 		Assert.assertEquals("a", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -45,7 +46,7 @@ public class TestGnuGetopt {
 	public void testShortTwoStrings2() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-a", "abc");
 		Assert.assertEquals("abc", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -58,7 +59,7 @@ public class TestGnuGetopt {
 	public void testShortOneString() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-aa");
 		Assert.assertEquals("a", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -71,7 +72,7 @@ public class TestGnuGetopt {
 	public void testShortOneString2() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-aabc");
 		Assert.assertEquals("abc", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -84,7 +85,7 @@ public class TestGnuGetopt {
 	public void testShortOneString3() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-aabcm");
 		Assert.assertEquals("abcm", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -97,7 +98,7 @@ public class TestGnuGetopt {
 	public void testShortOneString4() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("-maabc");
 		Assert.assertEquals("abc", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -110,7 +111,7 @@ public class TestGnuGetopt {
 	public void testLongFullNoEquals() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("--a-value", "a");
 		Assert.assertEquals("a", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -123,7 +124,7 @@ public class TestGnuGetopt {
 	public void testLongFullWithEquals() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		getOpt.processParams("--a-value=a");
 		Assert.assertEquals("a", gnuReceptacle.getA());
 		Assert.assertNull(gnuReceptacle.getB());
@@ -136,7 +137,7 @@ public class TestGnuGetopt {
 	public void testOptAfterNonOpt() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null);
 		List<String> result = getOpt.processParams("q", "--a-value", "a");
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals("q", result.get(0));
@@ -151,8 +152,8 @@ public class TestGnuGetopt {
 	public void testOptAfterNonOptPosixlyCorrect() {
 		GnuReceptacle gnuReceptacle = new GnuReceptacle();
 
-		GetOpt getOpt =
-				GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, CommandLineProcessingFlavors.GNU_GETOPT_POSIXLY_CORRECT);
+		GetOpt getOpt = GetOpt.createFromReceptacle(gnuReceptacle, TestGnuGetopt.class, null,
+				CommandLineProcessingFlavors.GNU_GETOPT_POSIXLY_CORRECT);
 		List<String> result = getOpt.processParams("q", "--a-value", "a");
 		Assert.assertEquals(3, result.size());
 		Assert.assertEquals("q", result.get(0));

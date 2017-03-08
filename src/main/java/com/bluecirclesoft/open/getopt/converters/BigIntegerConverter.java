@@ -17,12 +17,12 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
+import java.math.BigInteger;
+
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
 import com.bluecirclesoft.open.getopt.GetOpt;
 import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
-
-import java.math.BigInteger;
 
 /**
  * Converter to parse parameter strings into BigIntegers.
@@ -44,7 +44,7 @@ public class BigIntegerConverter implements TypeConverter<BigInteger> {
 			return null;
 		} else {
 			try {
-				return new BigInteger(input);
+				return new BigInteger(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
 						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be an integer", options);

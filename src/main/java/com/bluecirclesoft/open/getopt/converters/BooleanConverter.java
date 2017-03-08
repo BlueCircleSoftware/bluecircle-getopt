@@ -33,7 +33,7 @@ public class BooleanConverter implements TypeConverter<Boolean> {
 	 * Convert a string into a Boolean or null.
 	 *
 	 * @param input the input string
-	 * @return {@code null} if {@code input} is null or blank, or a Boolean as if by parseBoolean.
+	 * @return {@code null} if {@code input} is null or blank, or a Boolean as if lowercased by parseBoolean.
 	 * @see Boolean#parseBoolean(String)
 	 */
 	@Override
@@ -41,7 +41,7 @@ public class BooleanConverter implements TypeConverter<Boolean> {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
-			return Boolean.parseBoolean(input);
+			return Boolean.parseBoolean(input.trim());
 		}
 	}
 }

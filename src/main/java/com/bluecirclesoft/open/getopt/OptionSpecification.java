@@ -62,32 +62,32 @@ public class OptionSpecification {
 		switch (argumentSpecification) {
 			case NONE:
 				if (onEncounterNoArg == null) {
-					throw new GetOptSetupException("onEncounterNoArg must be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterNoArg must be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				if (onEncounterWithArg != null) {
-					throw new GetOptSetupException("onEncounterWithArg cannot be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterWithArg cannot be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				break;
 			case REQUIRED:
 				if (onEncounterNoArg != null) {
-					throw new GetOptSetupException("onEncounterNoArg cannot be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterNoArg cannot be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				if (onEncounterWithArg == null) {
-					throw new GetOptSetupException("onEncounterWithArg must be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterWithArg must be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				break;
 			case OPTIONAL:
 				if (onEncounterNoArg == null) {
-					throw new GetOptSetupException("onEncounterNoArg must be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterNoArg must be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				if (onEncounterWithArg == null) {
-					throw new GetOptSetupException("onEncounterWithArg must be set if " +
-							"argumentSpecification is " + argumentSpecification);
+					throw new GetOptSetupException(
+							"onEncounterWithArg must be set if " + "argumentSpecification is " + argumentSpecification);
 				}
 				break;
 			default:
@@ -124,6 +124,14 @@ public class OptionSpecification {
 
 	public boolean isRequired() {
 		return required;
+	}
+
+	public boolean isFlag() {
+		return argumentSpecification == ArgumentSpecification.NONE;
+	}
+
+	public boolean isCommandLineOptional() {
+		return argumentSpecification != ArgumentSpecification.NONE && !required;
 	}
 
 	public ArgumentSpecification getArgumentSpecification() {

@@ -45,7 +45,7 @@ public class IntegerConverter implements TypeConverter<Integer> {
 			return null;
 		} else {
 			try {
-				return Integer.parseInt(input);
+				return Integer.parseInt(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
 						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +

@@ -17,10 +17,10 @@
 
 package test;
 
+import java.util.logging.Logger;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.logging.Logger;
 
 /**
  * Test the examples outside the getopt package to make sure I don't accidentally hide the interface again.
@@ -32,9 +32,17 @@ public class TestExamples {
 
 	@Test
 	public void testExample1() {
-		Assert.assertEquals(0, GetOptExample1.main("-i", "-", "-v"));
-		Assert.assertEquals(0, GetOptExample1.main());
-		Assert.assertEquals(1, GetOptExample1.main("-i"));
+		GetOptExample1.setErrored(false);
+		GetOptExample1.main("-i", "-", "-v");
+		Assert.assertFalse(GetOptExample1.isErrored());
+
+		GetOptExample1.setErrored(false);
+		GetOptExample1.main();
+		Assert.assertFalse(GetOptExample1.isErrored());
+
+		GetOptExample1.setErrored(false);
+		GetOptExample1.main("-i");
+		Assert.assertTrue(GetOptExample1.isErrored());
 
 	}
 

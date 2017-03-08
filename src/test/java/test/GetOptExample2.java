@@ -17,25 +17,36 @@
 
 package test;
 
+import java.util.List;
+
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
 import com.bluecirclesoft.open.getopt.GetOpt;
-
-import java.util.List;
 
 /**
  * Example code for the README.md file
  */
 public class GetOptExample2 {
 
-	public static int main(String... args) {
+	private static boolean errored;
+
+	public static boolean isErrored() {
+		return errored;
+	}
+
+	public static void setErrored(boolean errored) {
+		GetOptExample2.errored = errored;
+	}
+
+	public static void main(String... args) {
 		final UtilityOptions options = new UtilityOptions();
-		GetOpt getOpt = GetOpt.createFromReceptacle(options, "myUtility [OPTIONS] file...");
+		GetOpt getOpt = GetOpt.createFromReceptacle(options, "myUtility", "file...");
 		List<String> remainingCommandLine;
 		try {
 			remainingCommandLine = getOpt.processParams(args);
 		} catch (CommandLineProcessingException e) {
 			System.err.println(e.getMessage());
-			return 1;
+			errored = true;
+			return;
 		}
 
 		if (options.isVerbose()) {
@@ -45,7 +56,5 @@ public class GetOptExample2 {
 		}
 
 		System.out.print("Parameters: " + remainingCommandLine);
-
-		return 0;
 	}
 }

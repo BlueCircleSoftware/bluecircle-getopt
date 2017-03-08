@@ -44,7 +44,7 @@ public class FloatConverter implements TypeConverter<Float> {
 			return null;
 		} else {
 			try {
-				return Float.parseFloat(input);
+				return Float.parseFloat(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
 						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " +

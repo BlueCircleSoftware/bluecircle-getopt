@@ -17,13 +17,13 @@
 
 package com.bluecirclesoft.open.getopt;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TestGetOpt {
 
@@ -33,7 +33,7 @@ public class TestGetOpt {
 
 	@Before
 	public void setUp() {
-		defaultOptions = GetOpt.create("Test");
+		defaultOptions = GetOpt.create("Test", null);
 		defaultOptions.addFlag("blah", on -> encountered.put("a", on)).addShortOpt('a').addLongOpt("alpha");
 		defaultOptions.addFlag("blah", on -> encountered.put("b", on)).addShortOpt('b').addLongOpt("beta");
 		defaultOptions.addFlag("blah", on -> encountered.put("c", on)).addShortOpt('c').addLongOpt("gamma");
@@ -43,7 +43,7 @@ public class TestGetOpt {
 
 	@Test
 	public void testAddShortOpt() {
-		GetOpt opt = GetOpt.create("Test");
+		GetOpt opt = GetOpt.create("Test", null);
 		for (char c = 'a'; c <= 'z'; c++) {
 			opt.addFlag("blah", on -> encountered.put("a", on)).addShortOpt(c);
 		}
@@ -272,7 +272,7 @@ public class TestGetOpt {
 	public void testReceptacle1() {
 		try {
 			ReceptacleA receptacleA = new ReceptacleA();
-			GetOpt opt = GetOpt.createFromReceptacle(receptacleA, "main");
+			GetOpt opt = GetOpt.createFromReceptacle(receptacleA, "main", null);
 			opt.processParams("-c", "3", "-a", "qqq", "-b");
 			Assert.assertEquals("qqq", receptacleA.getOpt1());
 			Assert.assertTrue(receptacleA.isOpt2());
@@ -286,7 +286,7 @@ public class TestGetOpt {
 	@Test
 	public void testExampleFluent1() {
 		final UtilityOptions receptacle = new UtilityOptions();
-		GetOpt options = GetOpt.create("myutility");
+		GetOpt options = GetOpt.create("myutility", null);
 		options.addParam("file", "the input file (- for standard input)", false, receptacle::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");
@@ -308,7 +308,7 @@ public class TestGetOpt {
 	@Test
 	public void testExampleReceptacle1() {
 		final UtilityOptions2 receptacle = new UtilityOptions2();
-		GetOpt options = GetOpt.createFromReceptacle(receptacle, "myUtility");
+		GetOpt options = GetOpt.createFromReceptacle(receptacle, "myUtility", null);
 		try {
 			options.processParams("-v");
 		} catch (CommandLineProcessingException e) {
@@ -323,7 +323,7 @@ public class TestGetOpt {
 	@Test
 	public void testExampleFluent2() {
 		final UtilityOptions receptacle = new UtilityOptions();
-		GetOpt options = GetOpt.create("myutility");
+		GetOpt options = GetOpt.create("myutility", null);
 		options.addParam("file", "the input file (- for standard input)", false, receptacle::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");
@@ -345,7 +345,7 @@ public class TestGetOpt {
 	@Test
 	public void testExampleFluent3() {
 		final UtilityOptions options = new UtilityOptions();
-		GetOpt getOpt = GetOpt.create("myutility");
+		GetOpt getOpt = GetOpt.create("myutility", null);
 		getOpt.addParam("file", "the input file (- for standard input)", false, options::setInput)
 				.addShortOpt('i')
 				.addLongOpt("input-file");

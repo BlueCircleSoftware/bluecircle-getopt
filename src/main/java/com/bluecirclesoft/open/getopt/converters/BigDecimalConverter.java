@@ -17,12 +17,12 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
+import java.math.BigDecimal;
+
 import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
 import com.bluecirclesoft.open.getopt.GetOpt;
 import com.bluecirclesoft.open.getopt.OptionSpecification;
 import com.bluecirclesoft.open.getopt.TypeConverter;
-
-import java.math.BigDecimal;
 
 /**
  * Converter to parse parameter strings into BigDecimals.
@@ -43,11 +43,12 @@ public class BigDecimalConverter implements TypeConverter<BigDecimal> {
 		if (ConverterUtil.isEmpty(input)) {
 			return null;
 		} else {
+			String trim = input.trim();
 			try {
-				return new BigDecimal(input);
+				return new BigDecimal(trim);
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be an integer or decimal number",
+						"Option " + option.makeOptionDescriptor() + ": the value '" + trim + "' must be an integer or decimal number",
 						options);
 			}
 		}

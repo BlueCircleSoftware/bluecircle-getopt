@@ -44,7 +44,7 @@ public class ShortConverter implements TypeConverter<Short> {
 			return null;
 		} else {
 			try {
-				return Short.parseShort(input);
+				return Short.parseShort(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
 						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
