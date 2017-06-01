@@ -20,7 +20,7 @@
 
     <groupId>com.bluecirclesoft.open</groupId>
     <artifactId>getopt</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <name>bluecircle-getopt</name>
     <description>bluecircle-getopt - A simple Java getopt processor</description>
     <url>https://github.com/mrami4/bluecircle-getopt</url>
@@ -47,7 +47,7 @@
         <url>scm:git:git@github.com:mrami4/bluecircle-getopt.git</url>
         <developerConnection>scm:git:git@github.com:mrami4/bluecircle-getopt.git
         </developerConnection>
-        <tag>HEAD</tag>
+        <tag>getopt-1.4</tag>
     </scm>
 
     <distributionManagement>
