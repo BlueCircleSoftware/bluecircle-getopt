@@ -18,6 +18,7 @@
 package com.bluecirclesoft.open.getopt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,42 +55,46 @@ public class ParameterDescription {
 	 * @return the next broken line, or {@code null} if there's nothing else to break;
 	 */
 	private static String findLine(String[] docHolder) {
-		final String str = docHolder[0];
-		if (str.isEmpty()) {
-			return null;
-		}
-		int i = MAX_WIDTH;
-		if (str.length() < i) {
-			docHolder[0] = "";
-			return str;
-		}
-		final String result;
-		while (i >= 0 && !Character.isSpaceChar(str.charAt(i))) {
-			i--;
-		}
-		if (i == 0) {
-			// no spaces - we started in the middle of a word - search forward
-			i = MAX_WIDTH + 1;
-			while (i < str.length() && !Character.isSpaceChar(str.charAt(i))) {
-				i++;
+		try {
+			final String str = docHolder[0];
+			if (str.isEmpty()) {
+				return null;
 			}
-			// found the end of the word, get it
-			result = str.substring(0, i);
-			// find the next word
-			while (i < str.length() && Character.isSpaceChar(str.charAt(i))) {
-				i++;
+			int i = MAX_WIDTH;
+			if (str.length() <= i) {
+				docHolder[0] = "";
+				return str;
 			}
-			docHolder[0] = str.substring(i, str.length());
-		} else {
-			// search backward - i will be position of next word, j will be position of last word
-			int j = i;
-			while (j >= 0 && Character.isSpaceChar(str.charAt(j))) {
-				j--;
+			final String result;
+			while (i >= 0 && !Character.isSpaceChar(str.charAt(i))) {
+				i--;
 			}
-			result = str.substring(0, j);
-			docHolder[0] = str.substring(i, str.length());
+			if (i == 0) {
+				// no spaces - we started in the middle of a word - search forward
+				i = MAX_WIDTH + 1;
+				while (i < str.length() && !Character.isSpaceChar(str.charAt(i))) {
+					i++;
+				}
+				// found the end of the word, get it
+				result = str.substring(0, i);
+				// find the next word
+				while (i < str.length() && Character.isSpaceChar(str.charAt(i))) {
+					i++;
+				}
+				docHolder[0] = str.substring(i, str.length());
+			} else {
+				// search backward - i will be position of next word, j will be position of last word
+				int j = i;
+				while (j >= 0 && Character.isSpaceChar(str.charAt(j))) {
+					j--;
+				}
+				result = str.substring(0, j + 1);
+				docHolder[0] = str.substring(i + 1, str.length());
+			}
+			return result;
+		} catch (Exception e) {
+			throw new InternalException("Error on input " + Arrays.toString(docHolder), e);
 		}
-		return result;
 	}
 
 	public Iterable<String> getOptionDescriptions() {
