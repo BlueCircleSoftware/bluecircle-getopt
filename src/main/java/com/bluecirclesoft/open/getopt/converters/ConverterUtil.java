@@ -17,41 +17,45 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
-import com.bluecirclesoft.open.getopt.TypeConverter;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+
+import com.bluecirclesoft.open.getopt.TypeConverter;
 
 /**
  * String utility class (to avoid bringing in Apache Commons)
  */
 public final class ConverterUtil {
 
-	private static final HashMap<Class, TypeConverter> DEFAULT_CONVERTERS = new HashMap<>();
+	private static final HashMap<Class<?>, TypeConverter<?>> DEFAULT_CONVERTERS = new HashMap<>();
+
+	private static <T> void addConverter(Class<T> typeClass, TypeConverter<T> converter) {
+		DEFAULT_CONVERTERS.put(typeClass, converter);
+	}
 
 	static {
-		DEFAULT_CONVERTERS.put(Boolean.class, new BooleanConverter());
-		DEFAULT_CONVERTERS.put(Byte.class, new ByteConverter());
-		DEFAULT_CONVERTERS.put(Character.class, new CharConverter());
-		DEFAULT_CONVERTERS.put(Double.class, new DoubleConverter());
-		DEFAULT_CONVERTERS.put(Float.class, new FloatConverter());
-		DEFAULT_CONVERTERS.put(Integer.class, new IntegerConverter());
-		DEFAULT_CONVERTERS.put(Long.class, new LongConverter());
-		DEFAULT_CONVERTERS.put(Short.class, new ShortConverter());
+		addConverter(Boolean.class, new BooleanConverter());
+		addConverter(Byte.class, new ByteConverter());
+		addConverter(Character.class, new CharConverter());
+		addConverter(Double.class, new DoubleConverter());
+		addConverter(Float.class, new FloatConverter());
+		addConverter(Integer.class, new IntegerConverter());
+		addConverter(Long.class, new LongConverter());
+		addConverter(Short.class, new ShortConverter());
 
-		DEFAULT_CONVERTERS.put(Boolean.TYPE, new BooleanConverter());
-		DEFAULT_CONVERTERS.put(Byte.TYPE, new ByteConverter());
-		DEFAULT_CONVERTERS.put(Character.TYPE, new CharConverter());
-		DEFAULT_CONVERTERS.put(Double.TYPE, new DoubleConverter());
-		DEFAULT_CONVERTERS.put(Float.TYPE, new FloatConverter());
-		DEFAULT_CONVERTERS.put(Integer.TYPE, new IntegerConverter());
-		DEFAULT_CONVERTERS.put(Long.TYPE, new LongConverter());
-		DEFAULT_CONVERTERS.put(Short.TYPE, new ShortConverter());
+		addConverter(Boolean.TYPE, new BooleanConverter());
+		addConverter(Byte.TYPE, new ByteConverter());
+		addConverter(Character.TYPE, new CharConverter());
+		addConverter(Double.TYPE, new DoubleConverter());
+		addConverter(Float.TYPE, new FloatConverter());
+		addConverter(Integer.TYPE, new IntegerConverter());
+		addConverter(Long.TYPE, new LongConverter());
+		addConverter(Short.TYPE, new ShortConverter());
 
-		DEFAULT_CONVERTERS.put(String.class, new StringConverter());
-		DEFAULT_CONVERTERS.put(BigDecimal.class, new BigDecimalConverter());
-		DEFAULT_CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
+		addConverter(String.class, new StringConverter());
+		addConverter(BigDecimal.class, new BigDecimalConverter());
+		addConverter(BigInteger.class, new BigIntegerConverter());
 	}
 
 	private ConverterUtil() {
@@ -84,7 +88,7 @@ public final class ConverterUtil {
 	 */
 	public static <T> TypeConverter<T> getDefaultConverter(Class<T> paramClass) {
 
-		return DEFAULT_CONVERTERS.get(paramClass);
+		return (TypeConverter<T>) DEFAULT_CONVERTERS.get(paramClass);
 
 	}
 

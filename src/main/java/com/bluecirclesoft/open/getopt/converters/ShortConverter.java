@@ -47,8 +47,8 @@ public class ShortConverter implements TypeConverter<Short> {
 				return Short.parseShort(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
-								"between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE, options);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " + "between " +
+								Short.MIN_VALUE + " and " + Short.MAX_VALUE, options);
 			}
 		}
 	}

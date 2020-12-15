@@ -17,9 +17,9 @@
 
 package com.bluecirclesoft.open.getopt.flavors;
 
-import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
-
 import java.util.List;
+
+import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
 
 /**
  * Defines a parameter processing flavor. I.e., should it process like GNU getopt, tar, etc.

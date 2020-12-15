@@ -17,8 +17,9 @@
 
 package com.bluecirclesoft.open.getopt.converters;
 
-import junit.framework.Assert;
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 /**
  * TODO document me

@@ -47,8 +47,8 @@ public class FloatConverter implements TypeConverter<Float> {
 				return Float.parseFloat(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " +
-								"floating-point number", options);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " + "floating-point number",
+						options);
 			}
 		}
 	}

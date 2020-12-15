@@ -48,8 +48,8 @@ public class IntegerConverter implements TypeConverter<Integer> {
 				return Integer.parseInt(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
-								"between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE, options);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " + "between " +
+								Integer.MIN_VALUE + " and " + Integer.MAX_VALUE, options);
 			}
 		}
 	}

@@ -180,7 +180,7 @@ public class GetOpt {
 	 *
 	 * @param mainClass The class name of the program (for the usage message)
 	 */
-	public static GetOpt create(Class mainClass, String restOfParamsDescription) {
+	public static GetOpt create(Class<?> mainClass, String restOfParamsDescription) {
 		return create(mainClass.getName(), restOfParamsDescription);
 	}
 
@@ -199,7 +199,7 @@ public class GetOpt {
 	 *
 	 * @param mainClass The class name of the program (for the usage message)
 	 */
-	public static GetOpt create(Class mainClass, String restOfParamsDescription, CommandLineProcessingFlavors flavor) {
+	public static GetOpt create(Class<?> mainClass, String restOfParamsDescription, CommandLineProcessingFlavors flavor) {
 		return create(mainClass.getName(), restOfParamsDescription, flavor);
 	}
 
@@ -209,7 +209,7 @@ public class GetOpt {
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, String restOfParamsDescription) {
+	public static GetOpt createFromReceptacle(Object receptacle, Class<?> mainClass, String restOfParamsDescription) {
 		GetOpt getOpt = create(mainClass, restOfParamsDescription);
 		getOpt.defineFromClass(receptacle);
 		return getOpt;
@@ -222,7 +222,7 @@ public class GetOpt {
 		return getOpt;
 	}
 
-	public static GetOpt createFromReceptacle(Object receptacle, Class mainClass, String restOfParamsDescription,
+	public static GetOpt createFromReceptacle(Object receptacle, Class<?> mainClass, String restOfParamsDescription,
 	                                          CommandLineProcessingFlavors flavor) {
 		GetOpt getOpt = create(mainClass, restOfParamsDescription, flavor);
 		getOpt.defineFromClass(receptacle);
@@ -230,11 +230,11 @@ public class GetOpt {
 	}
 
 	private void defineFromClass(Object receptacle) {
-		Class definitionClass = receptacle.getClass();
+		Class<?> definitionClass = receptacle.getClass();
 		for (Field field : definitionClass.getDeclaredFields()) {
 			ByArgument byArgument = field.getAnnotation(ByArgument.class);
 			ByFlag byFlag = field.getAnnotation(ByFlag.class);
-			Class type = field.getType();
+			Class<?> type = field.getType();
 			if (byArgument != null && byFlag != null) {
 				throw new GetOptSetupException(
 						"Both @ByFlag and @ByArgument set on " + field + "; " + "should be one or the other, but not both");
@@ -275,7 +275,7 @@ public class GetOpt {
 				throw new GetOptSetupException("Method " + method + ": methods annotated " +
 						"with @Flag or @Parameter must be 'setters'; that is, they must take " + "one parameter and return 'void'");
 			}
-			Class type = method.getParameters()[0].getType();
+			Class<?> type = method.getParameters()[0].getType();
 			if (byArgument != null) {
 				processParameterAnnotation(byArgument, type, (Object newValue) -> {
 					method.setAccessible(true);
@@ -301,9 +301,9 @@ public class GetOpt {
 		}
 	}
 
-	private <M> void processParameterAnnotation(ByArgument byArgument, Class<M> type, Consumer<M> setter) {
-		TypeConverter<M> converter;
-		Class<? extends TypeConverter<M>> converterClass = (Class<? extends TypeConverter<M>>) byArgument.converter();
+	private void processParameterAnnotation(ByArgument byArgument, Class<?> type, Consumer<Object> setter) {
+		TypeConverter<?> converter;
+		Class<? extends TypeConverter<?>> converterClass = byArgument.converter();
 		if (byArgument.converter() != UseTheDefaultConverter.class) {
 			try {
 				converter = converterClass.newInstance();
@@ -441,13 +441,10 @@ public class GetOpt {
 	 * @param errStr the output string builder
 	 */
 	public void usage(StringBuilder errStr) {
-		Set<OptionSpecification> sampleCommandDisplayed = new HashSet<>();
 		errStr.append("usage:\n");
 		errStr.append(programName);
-		boolean needsDash = true;
 
 		SortedMap<String, OptionSpecification> shortFlagsAlpha = new TreeMap<>();
-		SortedMap<String, OptionSpecification> otherOptsAlpha = new TreeMap<>();
 
 		// dump all the short options
 		for (OptionSpecification def : options) {
@@ -456,6 +453,8 @@ public class GetOpt {
 			}
 		}
 
+		Set<OptionSpecification> sampleCommandDisplayed = new HashSet<>();
+		boolean needsDash = true;
 		for (Entry<String, OptionSpecification> entry : shortFlagsAlpha.entrySet()) {
 			if (needsDash) {
 				errStr.append(" -");
@@ -466,6 +465,7 @@ public class GetOpt {
 		}
 
 		// now dump any long options that we haven't already dumped
+		SortedMap<String, OptionSpecification> otherOptsAlpha = new TreeMap<>();
 		for (OptionSpecification def : options) {
 			if (!sampleCommandDisplayed.contains(def)) {
 				if (def.getShortOptList().size() != 0) {
@@ -523,7 +523,7 @@ public class GetOpt {
 		}
 	}
 
-	public <T> void addShortOpt(OptionSpecification optionSpecification, Character opt) {
+	public void addShortOpt(OptionSpecification optionSpecification, Character opt) {
 		if (hasShortOpt(opt)) {
 			throw new GetOptSetupException("Short option -" + opt + " specified more than once");
 		}
@@ -531,7 +531,7 @@ public class GetOpt {
 		options.add(optionSpecification);
 	}
 
-	public <T> void addLongOpt(OptionSpecification optionSpecification, String opt) {
+	public void addLongOpt(OptionSpecification optionSpecification, String opt) {
 		if (byLong_.containsKey(opt)) {
 			throw new GetOptSetupException("Long option " + opt + " has already been defined");
 		}

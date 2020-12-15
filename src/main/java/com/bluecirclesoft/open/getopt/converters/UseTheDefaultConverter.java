@@ -22,6 +22,6 @@ import com.bluecirclesoft.open.getopt.TypeConverter;
 /**
  * An undefined tag class
  */
-public abstract class UseTheDefaultConverter implements TypeConverter {
+public abstract class UseTheDefaultConverter implements TypeConverter<String> {
 
 }

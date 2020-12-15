@@ -46,8 +46,9 @@ public class ByteConverter implements TypeConverter<Byte> {
 			try {
 				return Byte.parseByte(input.trim());
 			} catch (NumberFormatException e) {
-				throw new CommandLineProcessingException("Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be" +
-						" a number between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE, options);
+				throw new CommandLineProcessingException(
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be" + " a number between " +
+								Byte.MIN_VALUE + " and " + Byte.MAX_VALUE, options);
 			}
 		}
 	}

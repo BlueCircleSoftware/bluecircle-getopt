@@ -1,2 +1,8 @@
-.idea
 *.iml
+target
+/.idea/workspace.xml
+/.idea/compiler.xml
+/.idea/jarRepositories.xml
+/.idea/modules.xml
+/.idea/misc.xml
+/.idea/libraries/

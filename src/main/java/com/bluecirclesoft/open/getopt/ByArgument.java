@@ -17,13 +17,13 @@
 
 package com.bluecirclesoft.open.getopt;
 
-import com.bluecirclesoft.open.getopt.converters.UseTheDefaultConverter;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.bluecirclesoft.open.getopt.converters.UseTheDefaultConverter;
 
 /**
  * An annotation to place on a field or setter. This allows GetOpt to dispatch the parameters to the
@@ -78,5 +78,5 @@ public @interface ByArgument {
 	 *
 	 * @return the converter
 	 */
-	Class<? extends TypeConverter> converter() default UseTheDefaultConverter.class;
+	Class<? extends TypeConverter<?>> converter() default UseTheDefaultConverter.class;
 }

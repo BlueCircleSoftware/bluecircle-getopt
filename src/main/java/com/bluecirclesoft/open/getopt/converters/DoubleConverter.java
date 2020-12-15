@@ -48,8 +48,8 @@ public class DoubleConverter implements TypeConverter<Double> {
 				return Double.parseDouble(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " +
-								"floating-point number", options);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a " + "floating-point number",
+						options);
 			}
 		}
 	}

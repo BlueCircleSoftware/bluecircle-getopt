@@ -50,8 +50,7 @@ public class ReceptacleA {
 		return opt3;
 	}
 
-	@ByArgument(shortOpt = "c", longOpt = {"opt3", "option-3"}, documentation = "Option 3",
-			mnemonic = "o3")
+	@ByArgument(shortOpt = "c", longOpt = {"opt3", "option-3"}, documentation = "Option 3", mnemonic = "o3")
 	public void setOpt3(short opt3) {
 		this.opt3 = opt3;
 	}

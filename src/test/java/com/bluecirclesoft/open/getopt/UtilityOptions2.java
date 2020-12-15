@@ -22,12 +22,10 @@ package com.bluecirclesoft.open.getopt;
  */
 public class UtilityOptions2 {
 
-	@ByArgument(mnemonic = "file", documentation = "the input file (- for standard input)",
-			shortOpt = "i", longOpt = "input-file")
+	@ByArgument(mnemonic = "file", documentation = "the input file (- for standard input)", shortOpt = "i", longOpt = "input-file")
 	private String input = "-";
 
-	@ByArgument(mnemonic = "file", documentation = "the output file (- for standard input)",
-			shortOpt = "o", longOpt = "output-file")
+	@ByArgument(mnemonic = "file", documentation = "the output file (- for standard input)", shortOpt = "o", longOpt = "output-file")
 	private String output = "-";
 
 	@ByFlag(documentation = "produce verbose output", shortOpt = "v", longOpt = "verbose")

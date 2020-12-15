@@ -47,8 +47,8 @@ public class LongConverter implements TypeConverter<Long> {
 				return Long.parseLong(input.trim());
 			} catch (NumberFormatException e) {
 				throw new CommandLineProcessingException(
-						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " +
-								"between " + Long.MIN_VALUE + " and " + Long.MAX_VALUE, options);
+						"Option " + option.makeOptionDescriptor() + ": the value '" + input + "' must be a number " + "between " +
+								Long.MIN_VALUE + " and " + Long.MAX_VALUE, options);
 			}
 		}
 	}

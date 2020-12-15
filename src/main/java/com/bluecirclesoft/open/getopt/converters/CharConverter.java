@@ -39,8 +39,8 @@ public class CharConverter implements TypeConverter<Character> {
 		if (input == null || input.isEmpty()) {
 			return null;
 		} else if (input.length() > 1) {
-			throw new CommandLineProcessingException("Option " + option.makeOptionDescriptor() + ": the parameter can only be one " +
-					"character", options);
+			throw new CommandLineProcessingException(
+					"Option " + option.makeOptionDescriptor() + ": the parameter can only be one " + "character", options);
 		} else {
 			return input.charAt(0);
 		}

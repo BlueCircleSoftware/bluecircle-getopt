@@ -17,15 +17,15 @@
 
 package com.bluecirclesoft.open.getopt.flavors;
 
-import com.bluecirclesoft.open.getopt.ArgumentSpecification;
-import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
-import com.bluecirclesoft.open.getopt.GetOpt;
-import com.bluecirclesoft.open.getopt.OptionSpecification;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.bluecirclesoft.open.getopt.ArgumentSpecification;
+import com.bluecirclesoft.open.getopt.CommandLineProcessingException;
+import com.bluecirclesoft.open.getopt.GetOpt;
+import com.bluecirclesoft.open.getopt.OptionSpecification;
 
 /**
  * Option processing flavor for GNU getopt style processing.
@@ -34,13 +34,13 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 
 	private final GetOpt creator;
 
-	private boolean processOptionsAfterNonOptions;
+	private final boolean processOptionsAfterNonOptions;
 
 	/**
 	 * Construct a GNU getopt-flavor command line processor.
 	 *
 	 * @param creator                       GetOpt that created me
-	 * @param processOptionsAfterNonOptions if false, stop processsing options when the first
+	 * @param processOptionsAfterNonOptions if false, stop processing options when the first
 	 *                                      non-option argument is encountered (a.k.a.
 	 *                                      POSIXLY_CORRECT).  If true, only stop processing options
 	 *                                      when "--" is encountered.
@@ -76,11 +76,10 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 	 */
 	@Override
 	public List<String> processParams(List<String> params) {
-		int paramNum;
 		Collection<String> problems = new ArrayList<>();
 		List<String> nonOptions = new ArrayList<>();
 
-		for (paramNum = 0; paramNum < params.size(); paramNum++) {
+		for (int paramNum = 0; paramNum < params.size(); paramNum++) {
 			String param = params.get(paramNum);
 			if ("--".equals(param)) {
 				// stop processing; skip this parameter, and return the rest
@@ -135,7 +134,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 		return nonOptions;
 	}
 
-	private void extractRestOfLine(List<String> params, int paramNum, List<String> nonOptions) {
+	private static void extractRestOfLine(List<String> params, int paramNum, List<String> nonOptions) {
 		for (int i = paramNum; i < params.size(); i++) {
 			nonOptions.add(params.get(i));
 		}
@@ -155,8 +154,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 						break;
 					} else {
 						if (paramNum + 1 == params.size()) {
-							problems.add("Option -" + pChar +
-									" requires a parameter, but the command line doesn't have any more");
+							problems.add("Option -" + pChar + " requires a parameter, but the command line doesn't have any more");
 						} else {
 							paramNum++;
 							shortOpt.encounter(params.get(paramNum));
@@ -185,8 +183,7 @@ public class GnuGetoptFlavor implements CommandLineProcessingFlavor {
 		if (match != null) {
 			if (match.getArgumentSpecification() == ArgumentSpecification.REQUIRED) {
 				if (paramValue == null && paramNum + 1 == params.size()) {
-					problems.add("Option --" + longOptIn +
-							" requires a parameter, but the command line doesn't have any more");
+					problems.add("Option --" + longOptIn + " requires a parameter, but the command line doesn't have any more");
 				} else {
 					if (paramValue == null) {
 						paramNum++;

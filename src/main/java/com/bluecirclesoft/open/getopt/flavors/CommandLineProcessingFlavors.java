@@ -17,9 +17,9 @@
 
 package com.bluecirclesoft.open.getopt.flavors;
 
-import com.bluecirclesoft.open.getopt.GetOpt;
-
 import java.util.function.Function;
+
+import com.bluecirclesoft.open.getopt.GetOpt;
 
 /**
  * Lists the flavors of command-line processing
@@ -33,9 +33,10 @@ public enum CommandLineProcessingFlavors {
 	/**
 	 * GNU getopt-style, process all options on the command line, only stopping for '--'
 	 */
-	GNU_GETOPT(getOpt -> new GnuGetoptFlavor(getOpt, true)),;
+	GNU_GETOPT(getOpt -> new GnuGetoptFlavor(getOpt, true)),
+	;
 
-	private Function<GetOpt, CommandLineProcessingFlavor> builder;
+	private final Function<GetOpt, CommandLineProcessingFlavor> builder;
 
 	CommandLineProcessingFlavors(Function<GetOpt, CommandLineProcessingFlavor> builder) {
 		this.builder = builder;

@@ -65,10 +65,10 @@ public class ParameterDescription {
 				docHolder[0] = "";
 				return str;
 			}
-			final String result;
 			while (i >= 0 && !Character.isSpaceChar(str.charAt(i))) {
 				i--;
 			}
+			final String result;
 			if (i == 0) {
 				// no spaces - we started in the middle of a word - search forward
 				i = MAX_WIDTH + 1;
@@ -81,7 +81,7 @@ public class ParameterDescription {
 				while (i < str.length() && Character.isSpaceChar(str.charAt(i))) {
 					i++;
 				}
-				docHolder[0] = str.substring(i, str.length());
+				docHolder[0] = str.substring(i);
 			} else {
 				// search backward - i will be position of next word, j will be position of last word
 				int j = i;
@@ -89,7 +89,7 @@ public class ParameterDescription {
 					j--;
 				}
 				result = str.substring(0, j + 1);
-				docHolder[0] = str.substring(i + 1, str.length());
+				docHolder[0] = str.substring(i + 1);
 			}
 			return result;
 		} catch (Exception e) {
